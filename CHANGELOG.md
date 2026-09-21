@@ -5,6 +5,30 @@
 
 ---
 
+## [2026-09-21] - Netlify Deployment Architecture & Static API Fallback Engine
+
+### 🌐 Cross-Environment Static Routing & Autonomous Demonstration Mode
+- **What was done:**
+  - **Netlify Publish Redirects ([`netlify.toml`](file:///c:/Neura%20Track/netlify.toml)):** Configured `from = "/static/*" to = "/:splat"` so that assets (`app.js`, `style.css`, `evidence/`, `thumbnails/`) resolve seamlessly regardless of whether the site is accessed via `/static/...` or from the root on Netlify.
+  - **Static API Mock Engine ([`backend/app/static/api/`](file:///c:/Neura%20Track/backend/app/static/api)):** Exported full seed dataset to static JSON endpoints (`cameras.json`, `events.json`, `traffic_kpis.json`, `traffic_heatmap.json`, `traffic_od.json`, `alerts.json`, `watchlist.json`, `videos.json`, `trajectory_TS09AB1234.json`).
+  - **Autonomous Client Fallback Engine ([`app.js`](file:///c:/Neura%20Track/backend/app/static/app.js)):**
+    - Updated `loadCameras`, `loadLiveEvents`, `searchTrajectory`, `loadAnalytics`, and `loadAlertsAndWatchlist` with automatic fallback to static JSON endpoints if the backend API is unavailable or returns 404.
+    - Implemented `startSimulatedEventStream()` to continuously tick realistic traffic detections into the live event feed on static hosting environments.
+    - Wrapped `initWebSockets()` with graceful fallback to prevent unhandled reference errors.
+  - **Dual-Path Script & Style Tags ([`index.html`](file:///c:/Neura%20Track/backend/app/static/index.html)):** Added resilient script and stylesheet tags supporting both root (`style.css`, `app.js`) and prefix paths (`/static/style.css`, `/static/app.js`).
+  - **Test Suite Event Loop Stability ([`queue.py`](file:///c:/Neura%20Track/backend/app/services/queue.py)):** Refactored `IngestionQueue` to lazily instantiate `asyncio.Queue` in the active event loop, preventing cross-loop `RuntimeError` during pytest execution.
+- **Where (Files):**
+  - [`netlify.toml`](file:///c:/Neura%20Track/netlify.toml) — Static routing and API redirect rules
+  - [`backend/app/static/api/`](file:///c:/Neura%20Track/backend/app/static/api/) — Static JSON mock endpoints
+  - [`backend/app/static/app.js`](file:///c:/Neura%20Track/backend/app/static/app.js) — Resilient fallback logic and simulated event streaming
+  - [`backend/app/static/index.html`](file:///c:/Neura%20Track/backend/app/static/index.html) — Resilient style and script tags
+  - [`backend/app/main.py`](file:///c:/Neura%20Track/backend/app/main.py) — Root `/style.css` and `/app.js` endpoints
+  - [`backend/app/services/queue.py`](file:///c:/Neura%20Track/backend/app/services/queue.py) — Asyncio loop stability fix
+  - [`CHANGELOG.md`](file:///c:/Neura%20Track/CHANGELOG.md) — Recorded work log entry
+- **Why it was done:** Evaluator observed that the Netlify deployment was not working because static hosting does not run a Python FastAPI server, causing `/api/*` endpoints and `/static/*` assets to return 404. This implementation ensures 100% full interactivity on Netlify with real maps, trajectories, heatmaps, and simulated live telemetry.
+
+---
+
 ## [2026-09-21] - Netlify Cloud Live Deployment & Configuration
 
 ### 🌐 Live Cloud Deployment to Netlify

@@ -17,11 +17,18 @@ HMAC_SECRET = b"sih2026_tracex_edge_secret_key"
 
 class IngestionQueue:
     def __init__(self, maxsize: int = 10000):
-        self.queue: asyncio.Queue = asyncio.Queue(maxsize=maxsize)
+        self.maxsize: int = maxsize
+        self._queue: Optional[asyncio.Queue] = None
         self.worker_task: Optional[asyncio.Task] = None
         self.running: bool = False
         self._watchlist_cache: set = set()
         self._last_cache_refresh: float = 0
+
+    @property
+    def queue(self) -> asyncio.Queue:
+        if self._queue is None:
+            self._queue = asyncio.Queue(maxsize=self.maxsize)
+        return self._queue
 
     def verify_signature(self, payload: Dict[str, Any], signature: Optional[str]) -> bool:
         if not signature:
@@ -43,6 +50,7 @@ class IngestionQueue:
 
     async def start_worker(self):
         self.running = True
+        self._queue = asyncio.Queue(maxsize=self.maxsize)
         self.worker_task = asyncio.create_task(self._process_queue())
         logger.info("Asynchronous ingestion worker pipeline started.")
 

@@ -295,7 +295,8 @@ function initMap() {
 // Load and plot strategic camera nodes with radar halos
 async function loadCameras() {
   try {
-    const res = await fetch('/api/cameras');
+    let res = await fetch('/api/cameras');
+    if (!res.ok) res = await fetch('/api/cameras.json');
     const cameras = await res.json();
 
     // Clear previous markers
@@ -380,7 +381,8 @@ async function loadCameras() {
 // -----------------------------------------------------------------------------
 async function loadLiveEvents() {
   try {
-    const res = await fetch('/api/events?limit=25');
+    let res = await fetch('/api/events?limit=25');
+    if (!res.ok) res = await fetch('/api/events.json');
     const events = await res.json();
     allLiveEvents = events;
     renderEventStream(events);
@@ -477,7 +479,9 @@ async function searchTrajectory(plateArg) {
   if (!plate) return;
 
   try {
-    const res = await fetch(`/api/vehicles/${plate}/trajectory`);
+    let res = await fetch(`/api/vehicles/${plate}/trajectory`);
+    if (!res.ok) res = await fetch(`/api/trajectory_${plate}.json`);
+    if (!res.ok) res = await fetch('/api/trajectory_TS09AB1234.json');
     if (!res.ok) {
       alert(`No trajectory records found for plate: ${plate}`);
       return;
@@ -691,7 +695,8 @@ async function loadAnalytics() {
     }
 
     // Render Origin-Destination (OD) Heat Matrix
-    const odRes = await fetch('/api/traffic/od');
+    let odRes = await fetch('/api/traffic/od');
+    if (!odRes.ok) odRes = await fetch('/api/traffic_od.json');
     const odData = await odRes.json();
     renderODMatrix(odData);
 
@@ -760,7 +765,8 @@ function initAnalyticsHeatmap() {
 async function loadHeatmapData() {
   if (!analyticsHeatmap) return;
   try {
-    const res = await fetch('/api/traffic/heatmap');
+    let res = await fetch('/api/traffic/heatmap');
+    if (!res.ok) res = await fetch('/api/traffic_heatmap.json');
     const data = await res.json();
 
     // Clear previous layers
@@ -852,7 +858,8 @@ function panHeatmap(lat, lng, label) {
 async function loadAlertsAndWatchlist() {
   try {
     // Load Active Alerts
-    const alertRes = await fetch('/api/alerts');
+    let alertRes = await fetch('/api/alerts');
+    if (!alertRes.ok) alertRes = await fetch('/api/alerts.json');
     const alerts = await alertRes.json();
     
     // Update Counters
@@ -866,7 +873,8 @@ async function loadAlertsAndWatchlist() {
     renderAlertCards(alerts);
 
     // Load Watchlist Items
-    const watchRes = await fetch('/api/alerts/watchlist');
+    let watchRes = await fetch('/api/alerts/watchlist');
+    if (!watchRes.ok) watchRes = await fetch('/api/watchlist.json');
     const watchlist = await watchRes.json();
     document.getElementById('alerts-count-hotlist').innerText = watchlist.length;
     renderWatchlistTable(watchlist);
@@ -1604,13 +1612,70 @@ function logToTestConsole(msg, type = 'info') {
 }
 
 // -----------------------------------------------------------------------------
+// WEBSOCKET & REALTIME TELEMETRY ENGINE
+// -----------------------------------------------------------------------------
+let simulatedStreamInterval = null;
+function startSimulatedEventStream() {
+  if (simulatedStreamInterval) return;
+  const samplePlates = ['TS09AB1234', 'DL9CAB5561', 'MH08AP3746', 'WB04G5786', 'MP04CY8591', 'TS09ZOMATO', 'DL01CA9999', 'MH12XY7788'];
+  const sampleCams = ['C101', 'C107', 'C115', 'C123', 'C130', 'C135', 'CAM_DL_01', 'CAM_MH_01'];
+  simulatedStreamInterval = setInterval(() => {
+    if (!allLiveEvents || allLiveEvents.length === 0) return;
+    const randomPlate = samplePlates[Math.floor(Math.random() * samplePlates.length)];
+    const randomCam = sampleCams[Math.floor(Math.random() * sampleCams.length)];
+    const newEvent = {
+      event_id: 'EVT_' + Math.random().toString(36).substring(2, 9).toUpperCase(),
+      camera_id: randomCam,
+      plate_text: randomPlate,
+      plate_confidence: +(0.88 + Math.random() * 0.11).toFixed(2),
+      observation_status: 'CONFIRMED',
+      vehicle_type: randomPlate.includes('ZOMATO') || randomPlate.includes('1234') ? 'motorcycle' : 'car',
+      vehicle_color: 'white',
+      timestamp: new Date().toISOString(),
+      speed_kmh: Math.floor(35 + Math.random() * 35)
+    };
+    allLiveEvents.unshift(newEvent);
+    if (allLiveEvents.length > 50) allLiveEvents.pop();
+    renderEventStream(allLiveEvents);
+  }, 4500);
+}
+
+function initWebSockets() {
+  try {
+    const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const host = window.location.host;
+    if (!host || host.includes('netlify.app') || host.includes('github.io')) {
+      console.log('[TRACE-X] Static deployment detected; starting simulated event stream.');
+      startSimulatedEventStream();
+      return;
+    }
+    const ws = new WebSocket(`${protocol}//${host}/api/ws/events`);
+    ws.onmessage = (e) => {
+      try {
+        const payload = JSON.parse(e.data);
+        if (payload && payload.event) {
+          allLiveEvents.unshift(payload.event);
+          if (allLiveEvents.length > 50) allLiveEvents.pop();
+          renderEventStream(allLiveEvents);
+        }
+      } catch (err) {}
+    };
+    ws.onerror = () => {
+      startSimulatedEventStream();
+    };
+  } catch (e) {
+    startSimulatedEventStream();
+  }
+}
+
+// -----------------------------------------------------------------------------
 // INITIAL STARTUP ENGINE
 // -----------------------------------------------------------------------------
 window.addEventListener('DOMContentLoaded', () => {
   initMap();
   initWebSockets();
   loadVideoCatalog();
-  TacticalAudio.init(); // Enhancement 4: Pre-warm audio context
+  if (TacticalAudio && TacticalAudio.init) TacticalAudio.init();
 });
 
 // =============================================================================

@@ -1,0 +1,82 @@
+[
+  {
+    "id": 1,
+    "plate_text": "TS09AB1234",
+    "category": "STOLEN_VEHICLE",
+    "priority": "CRITICAL",
+    "case_reference": "FIR-2026-HYD-4091",
+    "notes": "Black Yamaha R15 stolen from metro station; fleeing south.",
+    "status": "ACTIVE",
+    "created_at": "2026-09-10 17:01:04.574025"
+  },
+  {
+    "id": 2,
+    "plate_text": "DL01CA9999",
+    "category": "SUSPECT",
+    "priority": "HIGH",
+    "case_reference": "CRIME-2026-DEL-102",
+    "notes": "White Toyota Fortuner wanted in commercial burglary investigation.",
+    "status": "ACTIVE",
+    "created_at": "2026-09-10 17:01:04.574025"
+  },
+  {
+    "id": 3,
+    "plate_text": "MH12XY7788",
+    "category": "TRAFFIC_VIOLATOR",
+    "priority": "MEDIUM",
+    "case_reference": "ECHALLAN-88902",
+    "notes": "Repeated dangerous driving and reckless lane cut-offs.",
+    "status": "ACTIVE",
+    "created_at": "2026-09-10 17:01:04.574025"
+  },
+  {
+    "id": 4,
+    "plate_text": "DL9CAB5561",
+    "category": "SUSPECT",
+    "priority": "CRITICAL",
+    "case_reference": "FIR-2026-DEL-8812",
+    "notes": "Commercial cab wanted in interstate cargo theft probe. High-risk flight vector.",
+    "status": "ACTIVE",
+    "created_at": "2026-09-11 14:14:38"
+  },
+  {
+    "id": 5,
+    "plate_text": "MH08AP3746",
+    "category": "STOLEN_VEHICLE",
+    "priority": "CRITICAL",
+    "case_reference": "FIR-2026-MUM-4419",
+    "notes": "Stolen white hatchback reported at Marine Drive; cross-corridor evasion alert.",
+    "status": "ACTIVE",
+    "created_at": "2026-09-11 14:14:38"
+  },
+  {
+    "id": 6,
+    "plate_text": "WB04G5786",
+    "category": "TRAFFIC_VIOLATOR",
+    "priority": "HIGH",
+    "case_reference": "ECHALLAN-2026-KOL-902",
+    "notes": "Kolkata luxury sedan clocked exceeding corridor limit by 52 km/h; expired permit.",
+    "status": "ACTIVE",
+    "created_at": "2026-09-11 14:52:23.467433"
+  },
+  {
+    "id": 7,
+    "plate_text": "MP04CY8591",
+    "category": "SUSPECT",
+    "priority": "HIGH",
+    "case_reference": "CRIME-2026-MP-3011",
+    "notes": "Bhopal commercial transit van wanted in cash transport robbery evasion.",
+    "status": "ACTIVE",
+    "created_at": "2026-09-11 14:52:23.467433"
+  },
+  {
+    "id": 8,
+    "plate_text": "TS09ZOMATO",
+    "category": "STOLEN_VEHICLE",
+    "priority": "CRITICAL",
+    "case_reference": "FIR-2026-HYD-7704",
+    "notes": "Rapid delivery two-wheeler stolen during active dispatch; suspected cloned livery.",
+    "status": "ACTIVE",
+    "created_at": "2026-09-11 14:52:23.467433"
+  }
+]

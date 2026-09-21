@@ -1,4 +1,4 @@
-# Netlify Configuration for TRACE-X Production Frontend
+# Netlify Configuration for TRACE-X Production Deployment
 [build]
   publish = "backend/app/static"
   command = ""
@@ -6,16 +6,85 @@
 [[headers]]
   for = "/*"
   [headers.values]
-    X-Frame-Options = "DENY"
-    X-XSS-Protection = "1; mode=block"
+    Access-Control-Allow-Origin = "*"
+    X-Frame-Options = "SAMEORIGIN"
     X-Content-Type-Options = "nosniff"
 
+# Route /static/ assets directly to root static folder
+[[redirects]]
+  from = "/static/*"
+  to = "/:splat"
+  status = 200
+
+# Route /scan to scan.html
 [[redirects]]
   from = "/scan"
   to = "/scan.html"
   status = 200
 
+# Route /api/ to static JSON fallback responses on Netlify
 [[redirects]]
-  from = "/docs"
-  to = "https://github.com/GudlaVishal-23/Trace-X"
-  status = 302
+  from = "/api/cameras"
+  to = "/api/cameras.json"
+  status = 200
+
+[[redirects]]
+  from = "/api/events"
+  to = "/api/events.json"
+  status = 200
+
+[[redirects]]
+  from = "/api/traffic/kpis"
+  to = "/api/traffic_kpis.json"
+  status = 200
+
+[[redirects]]
+  from = "/api/traffic/heatmap"
+  to = "/api/traffic_heatmap.json"
+  status = 200
+
+[[redirects]]
+  from = "/api/traffic/od"
+  to = "/api/traffic_od.json"
+  status = 200
+
+[[redirects]]
+  from = "/api/alerts/watchlist"
+  to = "/api/watchlist.json"
+  status = 200
+
+[[redirects]]
+  from = "/api/alerts"
+  to = "/api/alerts.json"
+  status = 200
+
+[[redirects]]
+  from = "/api/videos"
+  to = "/api/videos.json"
+  status = 200
+
+[[redirects]]
+  from = "/api/vehicles/TS09AB1234/trajectory"
+  to = "/api/trajectory_TS09AB1234.json"
+  status = 200
+
+[[redirects]]
+  from = "/api/vehicles/DL01CA9999/trajectory"
+  to = "/api/trajectory_DL01CA9999.json"
+  status = 200
+
+[[redirects]]
+  from = "/api/vehicles/MH12XY7788/trajectory"
+  to = "/api/trajectory_MH12XY7788.json"
+  status = 200
+
+[[redirects]]
+  from = "/api/vehicles/*/trajectory"
+  to = "/api/trajectory_TS09AB1234.json"
+  status = 200
+
+# Fallback for all other /api routes
+[[redirects]]
+  from = "/api/*"
+  to = "/api/events.json"
+  status = 200

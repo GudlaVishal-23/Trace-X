@@ -144,6 +144,20 @@ def serve_dashboard():
         return FileResponse(index_path)
     return {"status": "online", "message": "TRACE-X API is active. Open /docs for Swagger specifications."}
 
+@app.get("/style.css")
+def serve_style():
+    style_path = STATIC_DIR / "style.css"
+    if style_path.exists():
+        return FileResponse(style_path, media_type="text/css")
+    return {"status": "error"}
+
+@app.get("/app.js")
+def serve_app_js():
+    js_path = STATIC_DIR / "app.js"
+    if js_path.exists():
+        return FileResponse(js_path, media_type="application/javascript")
+    return {"status": "error"}
+
 @app.get("/scan")
 def serve_scan_theatre():
     scan_path = STATIC_DIR / "scan.html"
