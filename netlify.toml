@@ -1,0 +1,21 @@
+# Netlify Configuration for TRACE-X Production Frontend
+[build]
+  publish = "backend/app/static"
+  command = ""
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+
+[[redirects]]
+  from = "/scan"
+  to = "/scan.html"
+  status = 200
+
+[[redirects]]
+  from = "/docs"
+  to = "https://github.com/GudlaVishal-23/Trace-X"
+  status = 302

@@ -5,6 +5,20 @@
 
 ---
 
+## [2026-09-21] - Netlify Cloud Live Deployment & Configuration
+
+### 🌐 Live Cloud Deployment to Netlify
+- **What was done:**
+  - **Netlify Configuration ([`netlify.toml`](file:///c:/Neura%20Track/netlify.toml)):** Created production Netlify build configuration setting `publish = "backend/app/static"`, security response headers, and redirect rules for `/scan` and `/docs`.
+  - **Live Anonymous Cloud Deployment:** Deployed static Command Center and Scan Theatre to Netlify via Netlify CLI (`chimerical-entremet-8f7af0.netlify.app`).
+  - **Claim & CI/CD Integration:** Provided 1-click site claim token link to attach to user's Netlify account and remove password lock, plus zero-config GitHub continuous deployment via `netlify.toml`.
+- **Where (Files):**
+  - [`netlify.toml`](file:///c:/Neura%20Track/netlify.toml) — Production Netlify configuration and redirects
+  - [`CHANGELOG.md`](file:///c:/Neura%20Track/CHANGELOG.md) — Recorded work log entry
+- **Why it was done:** Evaluator requested live deployment on Netlify for remote evaluator demonstration.
+
+---
+
 ## [2026-09-21] - Repository Pruning: Untrack Private Documents & Heavy Binaries
 
 ### 🧹 Repository Cleanup for Public Sharing
