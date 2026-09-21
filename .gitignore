@@ -12,6 +12,7 @@ env/
 # IDE & Editor files
 .vscode/
 .idea/
+.netlify/
 *.swp
 *.swo
 *~
