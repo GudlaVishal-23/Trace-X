@@ -5,6 +5,22 @@
 
 ---
 
+## [2026-09-21] - Repository Pruning: Untrack Private Documents & Heavy Binaries
+
+### 🧹 Repository Cleanup for Public Sharing
+- **What was done:**
+  - **Untracked Private Office Decks & Documents:** Removed `SIH2026-IDEA-Presentation-*.pptx` and `TRACEX_Complete_Prototype_Master_Document.docx` from git tracking while preserving them on local storage.
+  - **Pruned Heavy Raw Video Files (155 MB):** Untracked raw MP4 clips in `sample videos/` to eliminate GitHub large-file warnings and avoid repository bloat, while preserving `sample videos/.gitkeep` and pre-rendered evidence thumbnails.
+  - **Untracked Runtime SQLite DB & Model Weights:** Untracked `data/tracex.db` (13.5 MB) and `yolov8n.pt` (6.5 MB) since database tables are automatically seeded on startup and model weights are auto-downloaded by Ultralytics on demand.
+  - **Removed Obsolete Dev Files & Scratch Scripts:** Deleted raw prototype HTML mockups (`data/stitch_screens/`), redundant `TRACE-X_Prototype_Master_README.md`, internal memory notes, and one-off scratch calibration scripts (`scripts/calibrate_crops.py`, `scripts/inspect_videos.py`, `scripts/fix_timestamps.py`, etc.).
+  - **Updated [`.gitignore`](file:///c:/Neura%20Track/.gitignore):** Added permanent exclusions for `*.pptx`, `*.docx`, `*.xlsx`, `*.db`, `*.sqlite`, `*.pt`, `sample videos/*.mp4`, `AGENTS.md`, and `.agents/`.
+- **Where (Files):**
+  - [`.gitignore`](file:///c:/Neura%20Track/.gitignore) — Updated exclusion patterns for privacy and lightweight repo
+  - [`CHANGELOG.md`](file:///c:/Neura%20Track/CHANGELOG.md) — Recorded work log entry
+- **Why it was done:** Evaluator requested removal of unwanted, useless, or private files that should not be shared online on GitHub.
+
+---
+
 ## [2026-09-21] - Git Repository Preparation & Master Documentation Update
 
 ### 🚀 Production Git Repository Setup & Bloat Cleanup
