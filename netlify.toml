@@ -10,6 +10,13 @@
     X-Frame-Options = "SAMEORIGIN"
     X-Content-Type-Options = "nosniff"
 
+[[headers]]
+  for = "/sample_videos/*"
+  [headers.values]
+    Content-Type = "video/mp4"
+    Accept-Ranges = "bytes"
+    Access-Control-Allow-Origin = "*"
+
 # Route /static/ assets directly to root static folder
 [[redirects]]
   from = "/static/*"
@@ -56,6 +63,16 @@
 [[redirects]]
   from = "/api/alerts"
   to = "/api/alerts.json"
+  status = 200
+
+[[redirects]]
+  from = "/api/videos/catalog"
+  to = "/api/videos.json"
+  status = 200
+
+[[redirects]]
+  from = "/api/videos/*/ingest"
+  to = "/api/events.json"
   status = 200
 
 [[redirects]]

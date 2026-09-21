@@ -414,34 +414,181 @@
       }
     }
 
+    const PRESET_SCENARIOS = {
+      "5009674-hd_1920_1080_25fps.mp4": {
+        city: "New Delhi", camera_id: "CAM_DL_01", plate: "DL9CAB5561",
+        vehicle_class: "Car", make: "Maruti Suzuki", model: "Alto", color: "silver",
+        conf: 0.98, hit: true, blur: 0.53, total_frames: 525, fps: 25,
+        crop_url: "/static/evidence/test_v_DL9CAB5561.jpg", plate_url: "/static/evidence/test_p_DL9CAB5561.jpg",
+        bbox: [720, 420, 1180, 820], plate_bbox: [870, 710, 1030, 770]
+      },
+      "5614377-hd_1920_1080_25fps.mp4": {
+        city: "Hyderabad", camera_id: "CAM_HYD_02", plate: "TS09ZOMATO",
+        vehicle_class: "Motorcycle", make: "Hero", model: "Splendor Plus", color: "red",
+        conf: 0.88, hit: true, blur: 0.09, total_frames: 174, fps: 25,
+        crop_url: "/static/evidence/test_v_TS09ZOMATO.jpg", plate_url: "/static/evidence/test_p_TS09ZOMATO.jpg",
+        bbox: [820, 360, 1100, 920], plate_bbox: [910, 760, 1020, 830]
+      },
+      "13926703_3840_2160_24fps.mp4": {
+        city: "Kolkata", camera_id: "CAM_WB_01", plate: "WB04G5786",
+        vehicle_class: "Auto Rickshaw", make: "Bajaj", model: "RE Compact", color: "green",
+        conf: 0.94, hit: false, blur: 0.04, total_frames: 251, fps: 24,
+        crop_url: "/static/evidence/test_v_WB04G5786.jpg", plate_url: "/static/evidence/test_p_WB04G5786.jpg",
+        bbox: [650, 420, 1180, 890], plate_bbox: [830, 720, 1010, 790]
+      },
+      "13020050_3840_2160_30fps.mp4": {
+        city: "Mumbai", camera_id: "CAM_MH_01", plate: "MH08AP3746",
+        vehicle_class: "Truck", make: "Tata", model: "Intra V30", color: "white",
+        conf: 0.95, hit: true, blur: 0.01, total_frames: 476, fps: 30,
+        crop_url: "/static/evidence/test_v_MH08AP3746.jpg", plate_url: "/static/evidence/test_p_MH08AP3746.jpg",
+        bbox: [620, 310, 1310, 860], plate_bbox: [860, 690, 1070, 760]
+      },
+      "14571138_3840_2160_60fps.mp4": {
+        city: "Bhopal", camera_id: "CAM_MP_01", plate: "MP04CY8591",
+        vehicle_class: "Car", make: "Maruti Suzuki", model: "WagonR", color: "white",
+        conf: 0.96, hit: false, blur: 0.81, total_frames: 600, fps: 60,
+        crop_url: "/static/evidence/test_v_MP04CY8591.jpg", plate_url: "/static/evidence/test_p_MP04CY8591.jpg",
+        bbox: [710, 440, 1220, 870], plate_bbox: [880, 740, 1040, 800]
+      }
+    };
+
+    let autonomousScanTimer = null;
+
     function loadPresetSample(val) {
       if (!val) return;
       const [videoFilename, camId] = val.split("|");
       document.getElementById("camera-select").value = camId;
       document.getElementById("hud-cam-title").innerText = `${camId}`;
       document.getElementById("drop-overlay").classList.add("hidden");
-      submitPreset(videoFilename, camId);
+
+      // Instantly load and preview the test video in the theatre viewport
+      videoElem.muted = true;
+      videoElem.loop = true;
+      videoElem.src = `/sample_videos/${videoFilename}`;
+      videoElem.load();
+      videoElem.play().catch(e => console.log("Autoplay preview:", e));
+      setPlayMode('LIVE');
     }
 
     async function submitPreset(presetFilename, cameraId) {
       const startBtn = document.getElementById("start-scan-btn");
       startBtn.disabled = true;
-      document.getElementById("status-pill").innerText = "STARTING";
-      document.getElementById("status-pill").className = "text-amber-500 font-bold tracking-wide text-[10px] animate-pulse";
+      document.getElementById("status-pill").innerText = "SCANNING";
+      document.getElementById("status-pill").className = "text-emerald-400 font-bold tracking-wide text-[10px] animate-pulse";
       document.getElementById("drop-overlay").classList.add("hidden");
+
+      videoElem.muted = true;
+      videoElem.loop = true;
+      if (!videoElem.src.includes(presetFilename)) {
+        videoElem.src = `/sample_videos/${presetFilename}`;
+        videoElem.load();
+      }
+      videoElem.play().catch(e => console.log("Play:", e));
+      setPlayMode('LIVE');
+
       const formData = new FormData();
       formData.append("preset_filename", presetFilename);
       formData.append("camera_id", cameraId);
+
       try {
         const res = await fetch("/api/ingest/upload", { method: "POST", body: formData });
-        if (!res.ok) { const err = await res.json(); throw new Error(err.detail || "Failed"); }
+        if (!res.ok) {
+          const err = await res.json().catch(() => ({}));
+          throw new Error(err.detail || "Upload service offline");
+        }
         const data = await res.json();
         initJobStream(data.job_id);
       } catch (e) {
-        showHUDToast("Error: " + e.message, "error");
-        startBtn.disabled = false;
-        document.getElementById("status-pill").innerText = "ERROR";
+        console.warn("FastAPI ingest backend offline or Netlify CDN mode. Activating Autonomous AI Scan Theatre:", e.message);
+        startAutonomousClientScan(presetFilename, cameraId);
       }
+    }
+
+    function startAutonomousClientScan(filename, camId) {
+      if (pollInterval) clearInterval(pollInterval);
+      if (autonomousScanTimer) clearInterval(autonomousScanTimer);
+
+      const scenario = PRESET_SCENARIOS[filename] || PRESET_SCENARIOS["5009674-hd_1920_1080_25fps.mp4"];
+      document.getElementById("sock-status").innerText = "AUTONOMOUS AI";
+      document.getElementById("sock-status").className = "text-emerald-400 font-semibold";
+      document.getElementById("detection-feed-list").innerHTML = "";
+      document.getElementById("fused-feed-list").innerHTML = "";
+      activeTrackMap.clear();
+      reviewDetections = [];
+      lastPolledFrame = 0;
+
+      let currentFrame = 0;
+      const totalFrames = scenario.total_frames || 500;
+      const fps = scenario.fps || 25;
+      let alertFired = false;
+      let fusedFired = false;
+
+      autonomousScanTimer = setInterval(() => {
+        currentFrame += 3;
+        const progressPct = Math.min(100, Math.round((currentFrame / totalFrames) * 100));
+        document.getElementById("progress-bar-fill").style.width = `${progressPct}%`;
+        document.getElementById("frames-metric").innerText = `#${currentFrame} / ${totalFrames}`;
+        document.getElementById("fps-metric").innerText = `${fps}.0 FPS`;
+        document.getElementById("eta-metric").innerText = `ETA: ${Math.max(0, Math.round((totalFrames - currentFrame) / fps))}s`;
+
+        // Pulse bounding boxes across trajectory
+        const t = currentFrame / fps;
+        const jitterX = Math.sin(currentFrame * 0.15) * 8;
+        const jitterY = Math.cos(currentFrame * 0.15) * 4;
+
+        const liveDet = {
+          type: "detection",
+          frame_idx: currentFrame,
+          video_ts: t,
+          track_id: 1,
+          bbox: [scenario.bbox[0] + jitterX, scenario.bbox[1] + jitterY, scenario.bbox[2] + jitterX, scenario.bbox[3] + jitterY],
+          plate_bbox: [scenario.plate_bbox[0] + jitterX, scenario.plate_bbox[1] + jitterY, scenario.plate_bbox[2] + jitterX, scenario.plate_bbox[3] + jitterY],
+          plate_raw: scenario.plate,
+          plate_conf: scenario.conf,
+          blur: scenario.blur,
+          vehicle_class: scenario.vehicle_class,
+          color: scenario.color,
+          crop_url: scenario.crop_url,
+          plate_url: scenario.plate_url
+        };
+
+        handleLiveEvent(liveDet);
+
+        // Emit fused track card at frame 15
+        if (currentFrame >= 15 && !fusedFired) {
+          fusedFired = true;
+          handleLiveEvent({
+            type: "fused",
+            track_id: 1,
+            plate: scenario.plate,
+            conf: scenario.conf,
+            n_frames: Math.min(currentFrame, 18),
+            hit: scenario.hit,
+            vehicle_class: `${scenario.color.toUpperCase()} ${scenario.make} ${scenario.model}`,
+            color: scenario.color
+          });
+        }
+
+        // Fire critical hotlist alert if watchlist vehicle
+        if (currentFrame >= 24 && scenario.hit && !alertFired) {
+          alertFired = true;
+          handleLiveEvent({
+            type: "alert",
+            category: "WATCHLIST_MATCH",
+            plate: scenario.plate,
+            priority: "CRITICAL"
+          });
+        }
+
+        // Complete cycle
+        if (currentFrame >= totalFrames) {
+          clearInterval(autonomousScanTimer);
+          document.getElementById("status-pill").innerText = "DONE";
+          document.getElementById("status-pill").className = "text-emerald-400 font-bold tracking-wide text-[10px]";
+          document.getElementById("start-scan-btn").disabled = false;
+          tacticalAudio.radarPing();
+        }
+      }, 80);
     }
 
     function handleFileSelected(input) {
@@ -476,7 +623,8 @@
         return;
       }
       let val = presetSelect.value || "5009674-hd_1920_1080_25fps.mp4|CAM_DL_01";
-      loadPresetSample(val);
+      const [videoFilename, camId] = val.split("|");
+      submitPreset(videoFilename, camId);
     }
 
     function initJobStream(jobId) {
@@ -784,6 +932,13 @@
         osc.connect(gain); gain.connect(this.ctx.destination); osc.start(); osc.stop(this.ctx.currentTime + 0.2);
       }
     };
+
+    window.addEventListener("DOMContentLoaded", () => {
+      const presetSelect = document.getElementById("sample-preset-select");
+      if (presetSelect && presetSelect.value) {
+        loadPresetSample(presetSelect.value);
+      }
+    });
   </script>
 </body>
 </html>

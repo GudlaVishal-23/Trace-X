@@ -17,6 +17,8 @@ def test_phase1_ingest_pipeline():
         # 2. Pick a test video
         sample_video_path = os.path.join(os.getcwd(), "scratch", "sample_test_3s.mp4")
         if not os.path.exists(sample_video_path):
+            sample_video_path = os.path.join(os.getcwd(), "backend", "app", "static", "sample_videos", "5009674-hd_1920_1080_25fps.mp4")
+        if not os.path.exists(sample_video_path):
             sample_video_path = os.path.join(os.getcwd(), "sample videos", "5009674-hd_1920_1080_25fps.mp4")
         assert os.path.exists(sample_video_path), f"Sample video missing at {sample_video_path}"
 

@@ -46,12 +46,13 @@ data/*.sqlite3
 *.onnx
 *.weights
 
-# Heavy Raw Video Files (Keep directory via .gitkeep)
-sample videos/*.mp4
+# Test Video Feeds (Preserved for Evaluator Testing & Static Deployment)
 sample videos/*.avi
 sample videos/*.mov
 sample videos/*.mkv
+!sample videos/*.mp4
 !sample videos/.gitkeep
+!backend/app/static/sample_videos/*.mp4
 
 # Ingest Uploads (Keep directory structures via .gitkeep)
 data/uploads/*.mp4

@@ -129,7 +129,9 @@ STATIC_DIR = Path(__file__).parent / "static"
 if STATIC_DIR.exists():
     app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
-SAMPLE_VIDEOS_DIR = Path(os.getcwd()) / "sample videos"
+SAMPLE_VIDEOS_DIR = Path(__file__).parent / "static" / "sample_videos"
+if not SAMPLE_VIDEOS_DIR.exists():
+    SAMPLE_VIDEOS_DIR = Path(os.getcwd()) / "sample videos"
 if SAMPLE_VIDEOS_DIR.exists():
     app.mount("/sample_videos", StaticFiles(directory=SAMPLE_VIDEOS_DIR), name="sample_videos")
 
