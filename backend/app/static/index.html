@@ -1,0 +1,834 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TRACE-X | City-Wide AI Vehicle Intelligence & Traffic Analytics</title>
+
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <!-- Material Symbols Outlined -->
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet">
+  <!-- Leaflet CSS -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <!-- Tailwind CSS via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: "class",
+      theme: {
+        extend: {
+          colors: {
+            "surface":                    "#0F172A",
+            "surface-container-lowest":   "#0B1120",
+            "surface-container-low":      "#1E293B",
+            "surface-container":          "#253347",
+            "surface-container-high":     "#334155",
+            "surface-container-highest":  "#475569",
+            "surface-bright":             "#4B5563",
+            "on-surface":                 "#F1F5F9",
+            "on-surface-variant":         "#94A3B8",
+            "primary":                    "#FDE68A",
+            "primary-container":          "#F59E0B",
+            "on-primary-container":       "#451A03",
+            "secondary":                  "#6EE7B7",
+            "secondary-container":        "#10B981",
+            "on-secondary-container":     "#022c22",
+            "error":                      "#FCA5A5",
+            "error-container":            "#EF4444",
+            "tertiary":                   "#93C5FD",
+            "tertiary-container":         "#3B82F6"
+          },
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace']
+          }
+        }
+      }
+    };
+  </script>
+  <link rel="stylesheet" href="/static/style.css?v=5.0" />
+</head>
+<body class="bg-surface font-sans text-on-surface antialiased select-none overflow-x-hidden">
+
+  <!-- ========================================================================= -->
+  <!-- TOP HEADER BAR — Clean, Minimal -->
+  <!-- ========================================================================= -->
+  <header class="fixed top-0 left-0 w-full z-50 h-14 bg-surface/95 backdrop-blur-xl border-b border-white/[0.06] px-5 flex items-center justify-between">
+
+    <!-- Brand -->
+    <div class="flex items-center gap-3">
+      <div class="w-8 h-8 rounded-lg bg-primary-container/15 border border-primary-container/25 flex items-center justify-center text-primary-container">
+        <span class="material-symbols-outlined text-[20px]">radar</span>
+      </div>
+      <div class="flex flex-col">
+        <span class="text-sm font-extrabold tracking-wider text-white">TRACE<span class="text-primary-container">-X</span></span>
+        <span class="font-mono text-[9px] text-on-surface-variant tracking-widest">SIH26127 • VEHICLE INTELLIGENCE</span>
+      </div>
+    </div>
+
+    <!-- Navigation Tabs -->
+    <nav class="hidden lg:flex items-center gap-0.5 bg-surface-container-low/60 p-1 rounded-xl border border-white/[0.06]">
+      <button class="nav-tab active flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium text-xs transition-all" onclick="switchView('map-view')" data-view="map-view">
+        <span class="material-symbols-outlined text-[16px]">map</span>
+        <span>Live Map</span>
+      </button>
+      <button class="nav-tab flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium text-xs text-on-surface-variant hover:text-white transition-all" onclick="switchView('trajectory-view')" data-view="trajectory-view">
+        <span class="material-symbols-outlined text-[16px]">alt_route</span>
+        <span>Trajectory</span>
+      </button>
+      <button class="nav-tab flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium text-xs text-on-surface-variant hover:text-white transition-all" onclick="switchView('analytics-view')" data-view="analytics-view">
+        <span class="material-symbols-outlined text-[16px]">analytics</span>
+        <span>Analytics</span>
+      </button>
+      <button class="nav-tab flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium text-xs text-on-surface-variant hover:text-white transition-all" onclick="switchView('alerts-view')" data-view="alerts-view">
+        <span class="material-symbols-outlined text-[16px]">notifications_active</span>
+        <span>Alerts</span>
+        <span class="bg-red-500/20 text-red-400 text-[10px] font-mono px-1.5 py-0.5 rounded-full font-bold" id="nav-alert-badge">3</span>
+      </button>
+      <button class="nav-tab flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-medium text-xs text-on-surface-variant hover:text-white transition-all" onclick="switchView('video-lab-view')" data-view="video-lab-view">
+        <span class="material-symbols-outlined text-[16px]">videocam</span>
+        <span>Video Lab</span>
+      </button>
+      <a href="/scan" target="_blank" class="nav-tab flex items-center gap-1.5 px-3 py-1.5 rounded-lg font-semibold text-xs text-primary-container hover:text-white transition-all bg-primary-container/8 border border-primary-container/20">
+        <span class="material-symbols-outlined text-[14px]">theaters</span>
+        <span>Scan Theatre</span>
+      </a>
+    </nav>
+
+    <!-- Right Actions -->
+    <div class="flex items-center gap-2">
+      <button class="jury-tour-btn" onclick="startJuryDemoTour()" title="60-second guided demo">
+        <span class="material-symbols-outlined text-[16px]">bolt</span>
+        <span>DEMO TOUR</span>
+      </button>
+      <button onclick="openTechSpecsModal()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container-low hover:bg-surface-container text-on-surface-variant hover:text-white text-xs border border-white/[0.06] transition-all" title="Technical Specs">
+        <span class="material-symbols-outlined text-[15px]">shield</span>
+        <span class="hidden lg:inline font-medium">Tech Specs</span>
+      </button>
+      <div class="hidden lg:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-surface-container-low/60 border border-white/[0.04] font-mono text-[10px] text-on-surface-variant">
+        <span class="material-symbols-outlined text-[13px]">schedule</span>
+        <span id="system-clock">14:28 IST</span>
+      </div>
+      <div class="hidden md:flex items-center gap-1.5 text-secondary-container font-mono text-[10px]">
+        <span class="w-1.5 h-1.5 rounded-full bg-secondary-container animate-pulse"></span>
+        <span class="font-semibold" id="header-node-count">8 NODES</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- ========================================================================= -->
+  <!-- SIDEBAR — Slim Icon Rail (64px) -->
+  <!-- ========================================================================= -->
+  <aside class="fixed left-0 top-14 h-[calc(100vh-3.5rem)] w-16 bg-surface-container-lowest/80 backdrop-blur-xl border-r border-white/[0.06] z-40 flex flex-col items-center py-4 gap-2">
+    <button class="sidebar-btn active flex flex-col items-center justify-center w-10 h-10 rounded-xl text-xs transition-all" onclick="switchView('map-view')" data-view="map-view" title="Live Map">
+      <span class="material-symbols-outlined text-[20px]">map</span>
+    </button>
+    <button class="sidebar-btn flex flex-col items-center justify-center w-10 h-10 rounded-xl text-on-surface-variant hover:text-white hover:bg-surface-container transition-all" onclick="switchView('trajectory-view')" data-view="trajectory-view" title="Trajectory Search">
+      <span class="material-symbols-outlined text-[20px]">alt_route</span>
+    </button>
+    <button class="sidebar-btn flex flex-col items-center justify-center w-10 h-10 rounded-xl text-on-surface-variant hover:text-white hover:bg-surface-container transition-all" onclick="switchView('analytics-view')" data-view="analytics-view" title="Traffic Analytics">
+      <span class="material-symbols-outlined text-[20px]">analytics</span>
+    </button>
+    <button class="sidebar-btn flex flex-col items-center justify-center w-10 h-10 rounded-xl text-on-surface-variant hover:text-white hover:bg-surface-container transition-all relative" onclick="switchView('alerts-view')" data-view="alerts-view" title="Watchlist & Alerts">
+      <span class="material-symbols-outlined text-[20px]">notifications_active</span>
+      <span class="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 rounded-full bg-red-500 text-white text-[7px] font-bold flex items-center justify-center" id="sidebar-alert-badge">3</span>
+    </button>
+    <button class="sidebar-btn flex flex-col items-center justify-center w-10 h-10 rounded-xl text-on-surface-variant hover:text-white hover:bg-surface-container transition-all" onclick="switchView('video-lab-view')" data-view="video-lab-view" title="Video Lab">
+      <span class="material-symbols-outlined text-[20px]">videocam</span>
+    </button>
+  </aside>
+
+  <!-- ========================================================================= -->
+  <!-- MAIN CONTENT (offset for header + sidebar) -->
+  <!-- ========================================================================= -->
+  <main class="pl-16 pt-14 min-h-screen bg-surface">
+
+    <!-- VIEW 1: LIVE CITY MAP -->
+    <section id="map-view" class="view-panel active h-[calc(100vh-3.5rem)] flex flex-col lg:flex-row overflow-hidden">
+      <!-- Map Container -->
+      <div class="relative flex-1 h-full bg-surface-container-lowest overflow-hidden">
+        <div id="leaflet-map" class="w-full h-full"></div>
+
+        <!-- Basemap Switcher (Top Right) — Icon-only -->
+        <div class="absolute top-3 right-3 z-[400] flex items-center gap-1 bg-surface/90 backdrop-blur-md p-1 rounded-xl border border-white/[0.08] shadow-lg font-mono text-[10px]">
+          <button id="btn-basemap-osm" onclick="setBasemap('osm')" class="px-2.5 py-1.5 rounded-lg bg-secondary-container text-surface font-bold transition-all flex items-center gap-1" title="OpenStreetMap">
+            <span class="material-symbols-outlined text-[14px]">wb_sunny</span>
+            <span>OSM</span>
+          </button>
+          <button id="btn-basemap-voyager" onclick="setBasemap('voyager')" class="px-2.5 py-1.5 rounded-lg text-on-surface-variant hover:text-white hover:bg-surface-container transition-all flex items-center gap-1" title="Carto Voyager">
+            <span class="material-symbols-outlined text-[14px]">explore</span>
+            <span>Voyager</span>
+          </button>
+          <button id="btn-basemap-esri" onclick="setBasemap('esri')" class="px-2.5 py-1.5 rounded-lg text-on-surface-variant hover:text-white hover:bg-surface-container transition-all flex items-center gap-1" title="Esri World Street">
+            <span class="material-symbols-outlined text-[14px]">public</span>
+            <span>Street</span>
+          </button>
+        </div>
+
+        <!-- Flow Legend (Bottom Left) -->
+        <div class="absolute bottom-3 left-3 z-[400] bg-surface/90 backdrop-blur-md px-3 py-2 rounded-xl border border-white/[0.08] flex items-center gap-4 shadow-lg font-mono text-[10px]">
+          <div class="flex items-center gap-1.5">
+            <span class="w-2.5 h-0.5 bg-secondary-container rounded-full"></span>
+            <span class="text-on-surface">&gt;40 km/h</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="w-2.5 h-0.5 bg-primary-container rounded-full"></span>
+            <span class="text-on-surface">&lt;20 km/h</span>
+          </div>
+          <div class="flex items-center gap-1.5">
+            <span class="w-1.5 h-1.5 rounded-full bg-primary-container animate-pulse"></span>
+            <span class="text-primary-container font-semibold">1 GAP</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Panel: Live Event Stream -->
+      <div class="w-full lg:w-[340px] h-full flex flex-col bg-surface border-l border-white/[0.06] shrink-0 z-30">
+        <!-- Stream Header -->
+        <div class="p-3.5 border-b border-white/[0.06] bg-surface-container-low/40 flex flex-col gap-2.5">
+          <div class="flex items-center justify-between">
+            <div class="flex items-center gap-2">
+              <span class="w-2 h-2 rounded-full bg-secondary-container animate-pulse"></span>
+              <span class="text-xs font-semibold text-white">Live Event Stream</span>
+            </div>
+          </div>
+          <!-- Filter Input -->
+          <div class="relative w-full">
+            <span class="material-symbols-outlined absolute left-2.5 top-1.5 text-[16px] text-on-surface-variant">search</span>
+            <input type="text" id="event-stream-filter" oninput="filterEventStream(this.value)" placeholder="Filter plate, node, model..." class="w-full bg-surface-container-lowest/50 pl-8 pr-3 py-1.5 rounded-lg border border-white/[0.06] font-mono text-xs text-white placeholder:text-on-surface-variant/50 focus:outline-none focus:border-primary-container/40 transition-all" />
+          </div>
+        </div>
+        <!-- Event Cards Scroll -->
+        <div class="flex-1 overflow-y-auto p-3 flex flex-col gap-2.5 custom-scrollbar" id="event-stream-container">
+          <!-- Dynamic Event Cards injected by app.js -->
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 2: TRAJECTORY SEARCH -->
+    <section id="trajectory-view" class="view-panel p-5 flex flex-col gap-5">
+
+      <!-- Search Console -->
+      <div class="w-full rounded-2xl bg-surface-container-low/60 backdrop-blur-md p-5 border border-white/[0.06] flex flex-col gap-4">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-3 items-center">
+          <!-- Plate Input -->
+          <div class="lg:col-span-7 flex items-center gap-2.5 bg-surface/60 rounded-xl px-4 py-2.5 border border-white/[0.06] focus-within:border-primary-container/30 transition-all">
+            <span class="material-symbols-outlined text-primary-container text-[20px]">search</span>
+            <input type="text" id="plate-input" placeholder="Enter registration plate (e.g. TS09AB1234)" value="TS09AB1234" class="w-full bg-transparent font-mono text-sm uppercase text-white placeholder:text-on-surface-variant/40 focus:outline-none tracking-wider font-semibold" />
+            <button onclick="document.getElementById('plate-input').value=''; document.getElementById('plate-input').focus();" class="text-on-surface-variant hover:text-white transition-colors">
+              <span class="material-symbols-outlined text-[16px]">close</span>
+            </button>
+          </div>
+
+          <!-- Time Window -->
+          <div class="lg:col-span-3 flex items-center bg-surface-container-low rounded-xl px-3 py-2.5 border border-white/[0.04] text-xs">
+            <span class="material-symbols-outlined text-primary-container text-[18px] mr-2">schedule</span>
+            <div class="flex flex-col flex-1 min-w-0">
+              <span class="text-[10px] text-on-surface-variant font-medium">Window</span>
+              <span class="text-xs font-medium text-white truncate">Last 6 Hours</span>
+            </div>
+          </div>
+
+          <!-- Search Button -->
+          <div class="lg:col-span-2 flex">
+            <button onclick="searchTrajectory()" class="w-full flex items-center justify-center gap-2 bg-primary-container hover:bg-primary-container/85 text-white font-bold text-xs py-2.5 px-4 rounded-xl shadow-md shadow-primary-container/20 active:scale-[0.98] transition-all">
+              <span class="material-symbols-outlined text-[18px]">alt_route</span>
+              <span>TRACK</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Quick Presets -->
+        <div class="flex flex-wrap items-center gap-2 text-xs text-on-surface-variant">
+          <span class="text-[10px] font-medium mr-1">Recent:</span>
+          <button onclick="quickSearch('TS09AB1234')" class="px-2.5 py-1 rounded-lg bg-surface-container text-white border border-primary-container/20 hover:border-primary-container/40 transition-all font-mono text-[11px] font-semibold">TS09AB1234</button>
+          <button onclick="quickSearch('DL01CA9999')" class="px-2.5 py-1 rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high transition-all font-mono text-[11px]">DL01CA9999</button>
+          <button onclick="quickSearch('MH12XY7788')" class="px-2.5 py-1 rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high transition-all font-mono text-[11px]">MH12XY7788</button>
+        </div>
+      </div>
+
+      <!-- KPI Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4" id="trajectory-kpi-row">
+        <!-- KPI 1: Target Vehicle -->
+        <div class="rounded-2xl bg-surface-container-low/60 p-4 border border-white/[0.06] flex flex-col gap-2">
+          <div class="flex items-center justify-between text-[10px] text-on-surface-variant font-medium">
+            <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[14px] text-primary-container">directions_car</span> Target Vehicle</span>
+            <span class="text-secondary-container font-semibold" id="traj-kpi-id">ID: #4092-A</span>
+          </div>
+          <div id="traj-hsrp-container"><!-- HSRP Plate --></div>
+          <div class="flex flex-col">
+            <span class="text-sm font-semibold text-white" id="traj-model-label">Black Yamaha R15 V4 (2022)</span>
+            <span class="font-mono text-[10px] text-on-surface-variant" id="traj-class-label">Class: Two-Wheeler • Fuel: Petrol</span>
+          </div>
+        </div>
+
+        <!-- KPI 2: Status -->
+        <div class="rounded-2xl bg-surface-container-low/60 p-4 border border-white/[0.06] flex flex-col gap-2">
+          <div class="flex items-center justify-between text-[10px] text-on-surface-variant font-medium">
+            <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[14px] text-secondary-container">insights</span> Trajectory Status</span>
+          </div>
+          <span class="px-2.5 py-1 rounded-lg bg-secondary-container/15 text-secondary-container font-mono text-sm font-bold tracking-wider w-fit" id="traj-status-badge">CONFIRMED</span>
+          <div class="flex flex-col gap-1.5">
+            <div class="flex justify-between font-mono text-[10px]">
+              <span class="text-on-surface-variant">Re-ID Confidence:</span>
+              <span class="text-secondary-container font-semibold" id="traj-conf-label">96.4% CONF</span>
+            </div>
+            <div class="w-full h-1 rounded-full bg-surface-container-highest overflow-hidden">
+              <div class="h-full bg-secondary-container rounded-full" id="traj-conf-bar" style="width: 96.4%;"></div>
+            </div>
+            <span class="font-mono text-[10px] text-on-surface-variant" id="traj-points-count">4 Correlated Checkpoints</span>
+          </div>
+        </div>
+
+        <!-- KPI 3: Distance -->
+        <div class="rounded-2xl bg-surface-container-low/60 p-4 border border-white/[0.06] flex flex-col gap-2">
+          <div class="flex items-center justify-between text-[10px] text-on-surface-variant font-medium">
+            <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[14px] text-primary-container">route</span> Distance Tracked</span>
+          </div>
+          <div class="flex items-baseline gap-1">
+            <span class="font-mono text-2xl font-bold text-white" id="traj-distance-val">10.8</span>
+            <span class="text-xs font-medium text-primary-container">km</span>
+          </div>
+          <div class="flex items-center justify-between font-mono text-[10px] text-on-surface-variant">
+            <span class="flex items-center gap-1 text-primary-container" id="traj-gap-warning">
+              <span class="material-symbols-outlined text-[12px]">warning</span> +3.2 km gap
+            </span>
+            <span class="text-white font-medium" id="traj-duration-val">24 min</span>
+          </div>
+        </div>
+
+        <!-- KPI 4: Speed -->
+        <div class="rounded-2xl bg-surface-container-low/60 p-4 border border-white/[0.06] flex flex-col gap-2">
+          <div class="flex items-center justify-between text-[10px] text-on-surface-variant font-medium">
+            <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[14px]">speed</span> Mean Speed</span>
+            <span class="text-secondary-container font-mono text-[10px] font-semibold" id="traj-regime-tag">NORMAL</span>
+          </div>
+          <div class="flex items-baseline gap-1">
+            <span class="font-mono text-2xl font-bold text-white" id="traj-speed-val">27.0</span>
+            <span class="text-xs text-on-surface-variant">km/h</span>
+          </div>
+          <div class="flex items-center justify-between font-mono text-[10px]">
+            <span class="text-on-surface-variant">Feasibility:</span>
+            <span class="text-secondary-container font-medium">&lt;160 km/h OK</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Route Reconstruction -->
+      <div class="w-full rounded-2xl bg-surface-container-lowest/60 p-5 border border-white/[0.06] flex flex-col gap-5">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 pb-3 border-b border-white/[0.06]">
+          <div class="flex items-center gap-2.5">
+            <span class="material-symbols-outlined text-primary-container text-[20px]">hub</span>
+            <div>
+              <h2 class="text-sm font-bold text-white">Route Reconstruction</h2>
+              <p class="text-[10px] text-on-surface-variant">Graph Solver with Feasibility Pruning & Gap Interpolation</p>
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <button onclick="startTrajectoryReplay()" id="btn-play-journey" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary-container hover:bg-primary-container/85 text-white font-mono text-xs font-bold transition-all active:scale-95">
+              <span class="material-symbols-outlined text-[15px]">play_arrow</span>
+              <span>PLAY JOURNEY</span>
+            </button>
+            <button onclick="exportDossier()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-white font-mono text-xs transition-all border border-white/[0.06]">
+              <span class="material-symbols-outlined text-[15px] text-primary-container">verified_user</span>
+              <span>Export Dossier</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Trajectory Map -->
+        <div class="w-full h-72 rounded-xl overflow-hidden border border-white/[0.06] relative">
+          <div id="trajectory-map" class="w-full h-full"></div>
+          <div id="replay-hud" class="replay-hud" style="display: none;">
+            <div class="hud-metric"><span class="hud-label">Speed</span><span class="hud-value speed" id="hud-speed">0</span></div>
+            <div class="hud-metric"><span class="hud-label">Camera</span><span class="hud-value camera" id="hud-camera">—</span></div>
+            <div class="hud-metric"><span class="hud-label">Elapsed</span><span class="hud-value" id="hud-elapsed">00:00</span></div>
+            <div class="hud-metric"><span class="hud-label">Status</span><span class="hud-value" id="hud-status" style="color: #10B981; font-size: 11px;">TRACKING</span></div>
+          </div>
+          <div id="replay-scrubber" class="replay-scrubber" style="display: none;">
+            <button onclick="toggleReplayPause()" id="replay-pause-btn" class="text-white hover:text-primary-container transition-colors">
+              <span class="material-symbols-outlined text-[18px]">pause</span>
+            </button>
+            <input type="range" id="replay-slider" min="0" max="100" value="0" oninput="seekReplay(this.value)" />
+            <span class="font-mono text-xs text-on-surface-variant" id="replay-time-label">0%</span>
+            <button onclick="stopTrajectoryReplay()" class="text-red-400 hover:text-white transition-colors" title="Stop">
+              <span class="material-symbols-outlined text-[16px]">stop</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Timeline Breadcrumbs -->
+        <div class="flex flex-col gap-3">
+          <h3 class="text-xs font-semibold text-on-surface-variant">Chronological Checkpoints</h3>
+          <div class="timeline-breadcrumbs flex flex-col gap-3" id="timeline-breadcrumbs">
+            <!-- Injected via JS -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 3: TRAFFIC ANALYTICS -->
+    <section id="analytics-view" class="view-panel p-5 flex flex-col gap-5">
+      <!-- Header -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
+        <div>
+          <h1 class="text-xl font-bold text-white">Traffic Analytics</h1>
+          <span class="text-xs text-on-surface-variant">Hyderabad Metropolitan Region • Real-time synthesis</span>
+        </div>
+        <div class="flex items-center gap-0.5 bg-surface-container-low/60 p-0.5 rounded-lg border border-white/[0.04] font-mono text-[10px]">
+          <button class="px-2.5 py-1 rounded-md bg-surface-container text-primary-container font-bold transition-all">24H</button>
+          <button class="px-2.5 py-1 rounded-md text-on-surface-variant hover:text-white transition-all">PEAK</button>
+          <button class="px-2.5 py-1 rounded-md text-on-surface-variant hover:text-white transition-all">7D</button>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="rounded-2xl bg-surface-container-low/60 p-4 border border-white/[0.06] flex flex-col gap-2">
+          <div class="flex items-center justify-between text-[10px] text-on-surface-variant font-medium">
+            <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[14px] text-primary-container">directions_car</span> Vehicles Today</span>
+            <span class="text-secondary-container font-semibold">+14.2%</span>
+          </div>
+          <span class="font-mono text-2xl font-bold text-white" id="analytics-total-vehicles">248,910</span>
+          <span class="text-[10px] text-on-surface-variant">Across 8 camera sectors</span>
+        </div>
+
+        <div class="rounded-2xl bg-surface-container-low/60 p-4 border border-white/[0.06] flex flex-col gap-2">
+          <div class="flex items-center justify-between text-[10px] text-on-surface-variant font-medium">
+            <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[14px] text-secondary-container">speed</span> City Speed</span>
+            <span class="text-secondary-container font-semibold">+3.1 km/h</span>
+          </div>
+          <div class="flex items-baseline gap-1">
+            <span class="font-mono text-2xl font-bold text-white" id="analytics-avg-speed">34.8</span>
+            <span class="text-xs text-on-surface-variant">km/h</span>
+          </div>
+          <span class="text-[10px] text-on-surface-variant">91.6% efficiency</span>
+        </div>
+
+        <div class="rounded-2xl bg-surface-container-low/60 p-4 border border-white/[0.06] flex flex-col gap-2">
+          <div class="flex items-center justify-between text-[10px] text-on-surface-variant font-medium">
+            <span class="flex items-center gap-1.5"><span class="material-symbols-outlined text-[14px] text-red-400">warning</span> Bottlenecks</span>
+            <span class="text-red-400 font-semibold animate-pulse">ACTIVE</span>
+          </div>
+          <span class="font-mono text-2xl font-bold text-red-400" id="analytics-bottlenecks">3</span>
+          <div class="flex flex-wrap gap-1 text-[9px] font-mono">
+            <span class="px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant">Begumpet 12 km/h</span>
+            <span class="px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant">Gachibowli</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Heatmap -->
+      <div class="w-full bg-surface-container-low/60 rounded-2xl p-5 border border-white/[0.06] flex flex-col gap-3">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-white/[0.06]">
+          <div>
+            <h3 class="text-sm font-bold text-white">Traffic Congestion Heatmap</h3>
+            <p class="text-[10px] text-on-surface-variant">Multi-Camera Spatial Density & Velocity Gradient</p>
+          </div>
+          <div class="flex items-center gap-1.5 text-[10px] font-mono flex-wrap">
+            <button onclick="panHeatmap(17.4435, 78.4682, 'Begumpet')" class="px-2 py-0.5 rounded bg-surface-container hover:bg-surface-container-high text-red-400 border border-red-400/20 transition-all">Begumpet</button>
+            <button onclick="panHeatmap(17.4401, 78.3489, 'Gachibowli')" class="px-2 py-0.5 rounded bg-surface-container hover:bg-surface-container-high text-primary-container border border-primary-container/20 transition-all">Gachibowli</button>
+            <button onclick="panHeatmap(17.4320, 78.4550, 'Secunderabad')" class="px-2 py-0.5 rounded bg-surface-container hover:bg-surface-container-high text-primary-container border border-primary-container/20 transition-all">Secunderabad</button>
+            <button onclick="panHeatmap(17.3750, 78.4480, 'PVNR Expwy')" class="px-2 py-0.5 rounded bg-surface-container hover:bg-surface-container-high text-secondary-container border border-secondary-container/20 transition-all">PVNR Expwy</button>
+          </div>
+        </div>
+
+        <div class="w-full h-80 rounded-xl overflow-hidden border border-white/[0.06] relative">
+          <div id="analytics-heatmap" class="w-full h-full"></div>
+          <div class="absolute bottom-2.5 left-2.5 z-[400] bg-surface/90 backdrop-blur-md px-3 py-1.5 rounded-xl border border-white/[0.06] flex items-center gap-3 font-mono text-[9px]">
+            <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-red-500"></span><span>&lt;15</span></div>
+            <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-primary-container"></span><span>15-25</span></div>
+            <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-yellow-400"></span><span>25-40</span></div>
+            <div class="flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-secondary-container"></span><span>&gt;40 km/h</span></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Modal Split + OD Matrix -->
+      <div class="grid grid-cols-1 xl:grid-cols-12 gap-5 items-start">
+        <!-- Modal Distribution -->
+        <div class="xl:col-span-6 flex flex-col gap-5">
+          <div class="bg-surface-container-low/60 rounded-2xl p-5 border border-white/[0.06] flex flex-col gap-3">
+            <div class="flex items-center justify-between pb-2 border-b border-white/[0.06]">
+              <div>
+                <h3 class="text-sm font-bold text-white">Vehicle Distribution</h3>
+                <p class="text-[10px] text-on-surface-variant">CNN Classification</p>
+              </div>
+              <span class="px-2 py-0.5 rounded bg-surface-container text-secondary-container text-[10px] font-mono font-semibold">99.4%</span>
+            </div>
+            <div class="flex flex-col gap-3" id="modal-bars-container">
+              <!-- Populated via JS -->
+            </div>
+          </div>
+
+          <!-- Peak Hours Chart -->
+          <div class="bg-surface-container-low/60 rounded-2xl p-5 border border-white/[0.06] flex flex-col gap-3">
+            <div class="flex items-center justify-between">
+              <h3 class="text-sm font-bold text-white">Hourly Traffic Flow</h3>
+              <span class="text-[10px] text-primary-container font-mono font-semibold" id="analytics-peak-hour">PEAK: 09:00 - 10:30</span>
+            </div>
+            <div class="h-28 flex items-end gap-1.5 pt-3 px-1" id="hourly-traffic-chart">
+              <!-- Bars via JS -->
+            </div>
+            <div class="flex justify-between font-mono text-[9px] text-on-surface-variant pt-1 border-t border-white/[0.04]">
+              <span>06:00</span><span>08:00</span><span>10:00</span><span>12:00</span><span>14:00</span><span>16:00</span><span>18:00</span><span>20:00</span><span>22:00</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- OD Matrix -->
+        <div class="xl:col-span-6 bg-surface-container-low/60 rounded-2xl p-5 border border-white/[0.06] flex flex-col gap-3">
+          <div class="flex items-center justify-between pb-2 border-b border-white/[0.06]">
+            <div>
+              <h3 class="text-sm font-bold text-white">Origin-Destination Matrix</h3>
+              <p class="text-[10px] text-on-surface-variant">Hourly Inter-Zonal Trips</p>
+            </div>
+            <span class="text-[10px] text-on-surface-variant font-mono">TRIPS/HR</span>
+          </div>
+          <div class="overflow-x-auto" id="od-matrix-container">
+            <!-- Table via JS -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 4: WATCHLIST & ALERTS -->
+    <section id="alerts-view" class="view-panel p-5 flex flex-col gap-5">
+
+      <!-- Alert Header -->
+      <div class="rounded-2xl bg-surface-container-low/60 p-5 border border-white/[0.06] flex flex-col xl:flex-row xl:items-center justify-between gap-4">
+        <div>
+          <h1 class="text-xl font-bold text-white">Watchlist & Alerts</h1>
+          <span class="text-xs text-on-surface-variant">Real-time interception monitoring</span>
+        </div>
+
+        <div class="flex items-center gap-4 flex-wrap">
+          <div class="flex items-center gap-4 bg-surface/60 px-4 py-2 rounded-xl border border-white/[0.06]">
+            <div class="flex flex-col items-center">
+              <span class="text-[9px] text-on-surface-variant">Critical</span>
+              <span class="font-mono text-lg font-bold text-red-400" id="alerts-count-critical">03</span>
+            </div>
+            <div class="h-6 w-px bg-white/10"></div>
+            <div class="flex flex-col items-center">
+              <span class="text-[9px] text-on-surface-variant">Hotlist</span>
+              <span class="font-mono text-lg font-bold text-white" id="alerts-count-hotlist">42</span>
+            </div>
+          </div>
+
+          <button onclick="broadcastPCRAlert()" class="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-primary-container hover:bg-primary-container/85 text-white font-bold text-xs transition-all shadow-md shadow-primary-container/15 active:scale-95">
+            <span class="material-symbols-outlined text-[18px]">cell_tower</span>
+            <span>Broadcast Alert</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Alert Cards Grid -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-5" id="alerts-stream-grid">
+        <!-- Dynamic via JS -->
+      </div>
+
+      <!-- Watchlist Table -->
+      <div class="bg-surface-container-low/60 rounded-2xl p-5 border border-white/[0.06] flex flex-col gap-3">
+        <div class="flex items-center justify-between pb-2 border-b border-white/[0.06]">
+          <div>
+            <h3 class="text-sm font-bold text-white">Active Watchlist</h3>
+            <p class="text-[10px] text-on-surface-variant">Monitored plates for real-time interception</p>
+          </div>
+          <button onclick="showAddWatchlistModal()" class="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-primary-container hover:bg-primary-container/85 text-white font-mono text-xs font-bold transition-all">
+            <span class="material-symbols-outlined text-[14px]">add</span>
+            <span>Add Plate</span>
+          </button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left font-mono text-xs">
+            <thead>
+              <tr class="border-b border-white/[0.06] text-on-surface-variant text-[10px]">
+                <th class="py-2.5 px-3">PLATE</th>
+                <th class="py-2.5 px-3">EVIDENCE</th>
+                <th class="py-2.5 px-3">CATEGORY</th>
+                <th class="py-2.5 px-3">PRIORITY</th>
+                <th class="py-2.5 px-3">CASE REF</th>
+                <th class="py-2.5 px-3">NOTES</th>
+                <th class="py-2.5 px-3">STATUS</th>
+                <th class="py-2.5 px-3 text-right">ACTION</th>
+              </tr>
+            </thead>
+            <tbody id="watchlist-table-body" class="divide-y divide-white/[0.04]">
+              <!-- Dynamic via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- VIEW 5: VIDEO ANPR LAB -->
+    <section id="video-lab-view" class="view-panel p-5 flex flex-col gap-5 overflow-y-auto max-h-[calc(100vh-3.5rem)]">
+      <!-- Studio Header -->
+      <div class="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-3 bg-surface-container-low/60 p-5 rounded-2xl border border-white/[0.06]">
+        <div>
+          <h1 class="text-xl font-bold text-white flex items-center gap-2">
+            Video ANPR Lab
+            <span class="px-2 py-0.5 rounded-full bg-secondary-container/15 text-secondary-container text-[10px] font-mono font-semibold border border-secondary-container/20">5 FEEDS</span>
+          </h1>
+          <p class="text-xs text-on-surface-variant">Real CCTV traffic streams • Dynamic detection & watchlist intercept</p>
+        </div>
+
+        <div class="flex items-center gap-2 flex-wrap">
+          <button onclick="runAllSampleIngestions()" class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-primary-container hover:bg-primary-container/85 text-white font-bold text-xs transition-all shadow-md shadow-primary-container/15 active:scale-95">
+            <span class="material-symbols-outlined text-[16px]">play_circle</span>
+            <span>Simulate All Feeds</span>
+          </button>
+          <button onclick="testSpeedAnomalyUI()" class="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-surface-container hover:bg-surface-container-high text-on-surface text-xs font-medium border border-white/[0.06] transition-all">
+            <span class="material-symbols-outlined text-[16px]">speed</span>
+            <span>Anomaly Guard</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Quick Metrics -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+        <div class="bg-surface-container-low/60 p-3 rounded-xl border border-white/[0.06] flex flex-col gap-0.5">
+          <span class="text-[9px] text-on-surface-variant font-medium">Coverage</span>
+          <span class="text-xs font-bold text-white">4 States (DL, MH, WB, MP)</span>
+          <span class="text-[9px] text-secondary-container">5 Streams</span>
+        </div>
+        <div class="bg-surface-container-low/60 p-3 rounded-xl border border-white/[0.06] flex flex-col gap-0.5">
+          <span class="text-[9px] text-on-surface-variant font-medium">Resolution</span>
+          <span class="text-xs font-bold text-white">HD to 4K UHD</span>
+          <span class="text-[9px] text-secondary-container">24-60 fps</span>
+        </div>
+        <div class="bg-surface-container-low/60 p-3 rounded-xl border border-white/[0.06] flex flex-col gap-0.5">
+          <span class="text-[9px] text-on-surface-variant font-medium">Quality Filter</span>
+          <span class="text-xs font-bold text-white">OpenCV Laplacian</span>
+          <span class="text-[9px] text-primary-container">Auto-CLAHE</span>
+        </div>
+        <div class="bg-surface-container-low/60 p-3 rounded-xl border border-white/[0.06] flex flex-col gap-0.5">
+          <span class="text-[9px] text-on-surface-variant font-medium">Watchlist</span>
+          <span class="text-xs font-bold text-red-400">2 Targets Seeded</span>
+          <span class="text-[9px] text-red-400">Instant Intercept</span>
+        </div>
+      </div>
+
+      <!-- Video Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5" id="video-catalog-grid">
+        <!-- Dynamic via JS -->
+      </div>
+
+      <!-- Verification Console -->
+      <div class="bg-surface-container-low/60 rounded-2xl p-5 border border-white/[0.06] flex flex-col gap-3">
+        <div class="flex items-center justify-between pb-2 border-b border-white/[0.06]">
+          <h3 class="text-sm font-bold text-white flex items-center gap-1.5">
+            <span class="material-symbols-outlined text-secondary-container text-[18px]">terminal</span>
+            Verification Terminal
+          </h3>
+          <span class="flex items-center gap-1 text-[9px] text-secondary-container font-mono">
+            <span class="w-1.5 h-1.5 rounded-full bg-secondary-container animate-pulse"></span>
+            LIVE
+          </span>
+        </div>
+        <div id="video-test-console" class="bg-surface/60 p-3 rounded-xl border border-white/[0.04] font-mono text-xs text-on-surface-variant max-h-48 overflow-y-auto space-y-1 custom-scrollbar">
+          <div class="text-secondary-container">Video ANPR Lab initialized. Select a feed or click "Simulate All Feeds".</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ========================================================================= -->
+  <!-- MODALS -->
+  <!-- ========================================================================= -->
+
+  <!-- Forensic Dossier Modal -->
+  <div id="dossier-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" style="display: none;">
+    <div class="bg-surface border border-white/10 rounded-2xl w-full max-w-3xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
+      <div class="p-4 border-b border-white/[0.06] flex items-center justify-between bg-surface-container-low">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary-container text-[20px]">verified_user</span>
+          <div>
+            <h3 class="text-sm font-bold text-white">Forensic Dossier & Chain of Custody</h3>
+            <span class="text-[10px] text-on-surface-variant font-mono">SEC 65B COMPLIANT</span>
+          </div>
+        </div>
+        <button onclick="closeDossierModal()" class="text-on-surface-variant hover:text-white p-1"><span class="material-symbols-outlined text-[18px]">close</span></button>
+      </div>
+      <div class="p-5 overflow-y-auto flex flex-col gap-4 custom-scrollbar font-mono text-xs" id="dossier-content"></div>
+      <div class="p-3 border-t border-white/[0.06] bg-surface-container-low flex items-center justify-between">
+        <button onclick="window.print()" class="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-container text-white text-xs border border-white/[0.06]">
+          <span class="material-symbols-outlined text-[14px]">print</span> Print
+        </button>
+        <button onclick="closeDossierModal()" class="px-4 py-1.5 rounded-lg bg-primary-container text-white font-bold text-xs">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add Watchlist Modal -->
+  <div id="add-watchlist-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" style="display: none;">
+    <div class="bg-surface border border-white/10 rounded-2xl w-full max-w-md shadow-2xl flex flex-col overflow-hidden">
+      <div class="p-4 border-b border-white/[0.06] flex items-center justify-between bg-surface-container-low">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary-container text-[18px]">add_alert</span>
+          Add Target Plate
+        </h3>
+        <button onclick="closeAddWatchlistModal()" class="text-on-surface-variant hover:text-white p-1"><span class="material-symbols-outlined text-[18px]">close</span></button>
+      </div>
+      <form onsubmit="submitWatchlist(event)" class="p-5 flex flex-col gap-3 text-xs">
+        <div class="flex flex-col gap-1">
+          <label class="text-on-surface-variant font-medium text-[10px]">Registration Plate</label>
+          <input type="text" id="watch-plate" required placeholder="e.g. TS09AB1234" class="w-full bg-surface-container-low px-3 py-2 rounded-lg border border-white/[0.06] text-white uppercase font-mono font-semibold focus:outline-none focus:border-primary-container/40" />
+        </div>
+        <div class="flex flex-col gap-1">
+          <label class="text-on-surface-variant font-medium text-[10px]">Category</label>
+          <select id="watch-category" class="w-full bg-surface-container-low px-3 py-2 rounded-lg border border-white/[0.06] text-white focus:outline-none">
+            <option value="STOLEN_VEHICLE">Stolen Vehicle</option>
+            <option value="SUSPECT">Suspect / Evasion</option>
+            <option value="TRAFFIC_VIOLATOR">Traffic Violator</option>
+          </select>
+        </div>
+        <div class="flex flex-col gap-1">
+          <label class="text-on-surface-variant font-medium text-[10px]">Priority</label>
+          <select id="watch-priority" class="w-full bg-surface-container-low px-3 py-2 rounded-lg border border-white/[0.06] text-white focus:outline-none">
+            <option value="CRITICAL">Critical</option>
+            <option value="HIGH">High</option>
+            <option value="MEDIUM">Medium</option>
+          </select>
+        </div>
+        <div class="flex flex-col gap-1">
+          <label class="text-on-surface-variant font-medium text-[10px]">Case Reference</label>
+          <input type="text" id="watch-case" placeholder="e.g. FIR-2026-HYD-4091" class="w-full bg-surface-container-low px-3 py-2 rounded-lg border border-white/[0.06] text-white focus:outline-none font-mono" />
+        </div>
+        <div class="flex flex-col gap-1">
+          <label class="text-on-surface-variant font-medium text-[10px]">Notes</label>
+          <textarea id="watch-notes" rows="2" placeholder="Vehicle make, color, brief..." class="w-full bg-surface-container-low px-3 py-2 rounded-lg border border-white/[0.06] text-white focus:outline-none"></textarea>
+        </div>
+        <div class="flex justify-end gap-2 pt-1">
+          <button type="button" onclick="closeAddWatchlistModal()" class="px-3 py-1.5 rounded-lg bg-surface-container text-on-surface-variant hover:text-white text-xs">Cancel</button>
+          <button type="submit" class="px-4 py-1.5 rounded-lg bg-primary-container text-white font-bold text-xs">Register</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Evidence Lightbox Modal -->
+  <div id="evidence-lightbox-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" style="display: none;">
+    <div class="bg-surface border border-white/10 rounded-2xl w-full max-w-4xl shadow-2xl flex flex-col max-h-[92vh] overflow-hidden">
+      <div class="p-4 border-b border-white/[0.06] flex items-center justify-between bg-surface-container-low">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary-container text-[20px]">visibility</span>
+          <div>
+            <h3 class="text-sm font-bold text-white" id="evidence-lightbox-title">ANPR Evidence</h3>
+            <span class="text-[10px] text-on-surface-variant" id="evidence-lightbox-subtitle">Forensic Capture</span>
+          </div>
+        </div>
+        <button onclick="closeEvidenceLightbox()" class="text-on-surface-variant hover:text-white p-1 rounded-lg hover:bg-surface-container transition-colors">
+          <span class="material-symbols-outlined text-[18px]">close</span>
+        </button>
+      </div>
+      <div class="p-5 overflow-y-auto flex flex-col gap-4 custom-scrollbar font-mono text-xs" id="evidence-lightbox-content"></div>
+      <div class="p-3 border-t border-white/[0.06] bg-surface-container-low flex items-center justify-between">
+        <span class="text-[10px] text-on-surface-variant flex items-center gap-1"><span class="material-symbols-outlined text-[13px]">verified</span> Authenticated</span>
+        <button onclick="closeEvidenceLightbox()" class="px-4 py-1.5 rounded-lg bg-primary-container text-white font-bold text-xs">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Presenter Dock -->
+  <div id="presenter-dock" class="presenter-dock" style="display: none;">
+    <div class="dock-step-indicators" id="dock-step-dots"></div>
+    <div class="dock-narration" id="dock-narration">Welcome to TRACE-X. Starting guided demo...</div>
+    <div class="dock-controls">
+      <div class="flex items-center gap-2">
+        <span class="font-mono text-[9px] text-on-surface-variant" id="dock-step-label">STEP 1 OF 5</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="prevTourStep()" class="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-white text-xs border border-white/[0.06]">
+          <span class="material-symbols-outlined text-[14px]">arrow_back</span> PREV
+        </button>
+        <button onclick="nextTourStep()" class="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-primary-container text-white text-xs font-bold">
+          NEXT <span class="material-symbols-outlined text-[14px]">arrow_forward</span>
+        </button>
+        <button onclick="endJuryDemoTour()" class="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-surface-container text-on-surface-variant hover:text-red-400 text-xs border border-white/[0.06]" title="End">
+          <span class="material-symbols-outlined text-[14px]">close</span> END
+        </button>
+      </div>
+      <div class="flex items-center gap-2">
+        <div class="w-20 h-1 rounded-full bg-surface-container-highest overflow-hidden">
+          <div class="h-full bg-primary-container rounded-full transition-all duration-500" id="dock-progress-bar" style="width: 20%;"></div>
+        </div>
+        <span class="font-mono text-[9px] text-primary-container font-bold" id="dock-timer">10s</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tech Specs Modal -->
+  <div id="tech-specs-modal" class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4" style="display: none;">
+    <div class="tech-specs-modal bg-surface border border-white/10 rounded-2xl w-full max-w-4xl shadow-2xl flex flex-col max-h-[90vh] overflow-hidden">
+      <div class="p-4 border-b border-white/[0.06] flex items-center justify-between bg-surface-container-low">
+        <div class="flex items-center gap-2">
+          <span class="material-symbols-outlined text-primary-container text-[20px]">shield</span>
+          <div>
+            <h3 class="text-sm font-bold text-white">Technical Specifications</h3>
+            <span class="text-[10px] text-on-surface-variant font-mono">SIH26127 • TRACE-X ENGINE</span>
+          </div>
+        </div>
+        <button onclick="closeTechSpecsModal()" class="text-on-surface-variant hover:text-white p-1"><span class="material-symbols-outlined text-[18px]">close</span></button>
+      </div>
+
+      <div class="p-5 overflow-y-auto flex flex-col gap-5 custom-scrollbar">
+        <div class="spec-card">
+          <h4 class="font-bold text-white text-sm mb-2 flex items-center gap-2"><span class="material-symbols-outlined text-primary-container text-[18px]">calculate</span> Trajectory Scoring</h4>
+          <div class="formula-block">Score(i→j) = w₁·S_plate + w₂·S_visual + w₃·S_spatial + w₄·S_temporal
+where: S_plate = Levenshtein, S_visual = cosine(OSNet 512-dim)
+       S_spatial = 1/(1+d_road), S_temporal = exp(-|Δt-t_exp|²/2σ²)</div>
+        </div>
+        <div class="spec-card">
+          <h4 class="font-bold text-white text-sm mb-2 flex items-center gap-2"><span class="material-symbols-outlined text-red-400 text-[18px]">speed</span> Feasibility Guard</h4>
+          <div class="formula-block">v_implied = d_haversine(cam_i, cam_j) / Δt
+IF v > 160 km/h → REJECT (physically impossible, clone/spoof)
+IF v > 120 km/h → Downgrade to PROBABLE</div>
+        </div>
+        <div class="spec-card">
+          <h4 class="font-bold text-white text-sm mb-2 flex items-center gap-2"><span class="material-symbols-outlined text-secondary-container text-[18px]">developer_board</span> Architecture</h4>
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs font-mono">
+            <div class="bg-surface/60 p-3 rounded-xl border border-white/[0.04] text-center"><div class="text-[8px] text-on-surface-variant">PERCEPTION</div><div class="text-white font-bold mt-1">YOLOv8</div><div class="text-[9px] text-secondary-container">+ ByteTrack</div></div>
+            <div class="bg-surface/60 p-3 rounded-xl border border-white/[0.04] text-center"><div class="text-[8px] text-on-surface-variant">BACKEND</div><div class="text-white font-bold mt-1">FastAPI</div><div class="text-[9px] text-secondary-container">Async WS</div></div>
+            <div class="bg-surface/60 p-3 rounded-xl border border-white/[0.04] text-center"><div class="text-[8px] text-on-surface-variant">DATABASE</div><div class="text-white font-bold mt-1">SQLite</div><div class="text-[9px] text-secondary-container">Spatial Idx</div></div>
+            <div class="bg-surface/60 p-3 rounded-xl border border-white/[0.04] text-center"><div class="text-[8px] text-on-surface-variant">IQA</div><div class="text-white font-bold mt-1">CLAHE</div><div class="text-[9px] text-secondary-container">Laplacian</div></div>
+          </div>
+        </div>
+        <div class="spec-card">
+          <h4 class="font-bold text-white text-sm mb-2 flex items-center gap-2"><span class="material-symbols-outlined text-secondary-container text-[18px]">verified</span> Classification</h4>
+          <div class="grid grid-cols-3 gap-2 text-xs font-mono">
+            <div class="bg-secondary-container/8 p-3 rounded-xl border border-secondary-container/15 text-center"><div class="text-secondary-container font-bold">CONFIRMED</div><div class="text-on-surface-variant text-[10px] mt-1">Plate ≥90% + Re-ID ≥0.85</div></div>
+            <div class="bg-amber-400/8 p-3 rounded-xl border border-amber-400/15 text-center"><div class="text-amber-400 font-bold">PROBABLE</div><div class="text-on-surface-variant text-[10px] mt-1">Partial match + Visual ≥0.70</div></div>
+            <div class="bg-primary-container/8 p-3 rounded-xl border border-primary-container/15 text-center"><div class="text-primary-container font-bold">CAMERA GAP</div><div class="text-on-surface-variant text-[10px] mt-1">Shortest-path interpolation</div></div>
+          </div>
+        </div>
+        <div class="spec-card">
+          <h4 class="font-bold text-white text-sm mb-2 flex items-center gap-2"><span class="material-symbols-outlined text-secondary-container text-[18px]">gavel</span> Legal Compliance</h4>
+          <div class="flex flex-col gap-1.5 text-xs">
+            <div class="flex items-start gap-2"><span class="text-secondary-container">✓</span><span>Zero raw video storage — structured events only (~1.2 KB/event)</span></div>
+            <div class="flex items-start gap-2"><span class="text-secondary-container">✓</span><span>SHA-256 tamper-evident audit chain</span></div>
+            <div class="flex items-start gap-2"><span class="text-secondary-container">✓</span><span>Indian Evidence Act Sec 65B compliant export</span></div>
+            <div class="flex items-start gap-2"><span class="text-secondary-container">✓</span><span>DPDP Act 2023 data minimization</span></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-3 border-t border-white/[0.06] bg-surface-container-low flex items-center justify-between">
+        <span class="text-[9px] text-on-surface-variant font-mono">SIH26127 • Multi-Camera ANPR</span>
+        <button onclick="closeTechSpecsModal()" class="px-4 py-1.5 rounded-lg bg-primary-container text-white font-bold text-xs">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <!-- Application Engine -->
+  <script src="/static/app.js?v=5.0"></script>
+</body>
+</html>

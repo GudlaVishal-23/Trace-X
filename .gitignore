@@ -1,0 +1,43 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual Environments
+venv/
+.venv/
+ENV/
+env/
+
+# IDE & Editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Testing & Cache
+.pytest_cache/
+.coverage
+htmlcov/
+.tox/
+.nox/
+
+# Temporary / Scratch files
+scratch/
+.kilo/
+
+# Ingest Uploads (Keep directory structures via .gitkeep)
+data/uploads/*.mp4
+data/uploads/*.avi
+data/uploads/*.mov
+data/uploads/*.mkv
+data/uploads/annotated/*.mp4
+data/uploads/crops/*
+!data/uploads/.gitkeep
+!data/uploads/annotated/.gitkeep
+!data/uploads/crops/.gitkeep
+
+# Environment variables
+.env

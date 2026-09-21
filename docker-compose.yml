@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  # PostgreSQL 16 with PostGIS 3.4 Spatial Database
+  tracex-db:
+    image: postgis/postgis:16-3.4
+    container_name: tracex-postgis
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-tracex_user}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-tracex_secure_pass}
+      POSTGRES_DB: ${POSTGRES_DB:-tracex_intelligence}
+    ports:
+      - "5432:5432"
+    volumes:
+      - tracex_db_data:/var/lib/postgresql/data
+      - ./backend/database/schema.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U tracex_user -d tracex_intelligence"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  # Redis for Hot Watchlist & Real-Time Trajectory Cache
+  tracex-cache:
+    image: redis:7-alpine
+    container_name: tracex-redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - tracex_redis_data:/data
+
+  # FastAPI Backend Service
+  tracex-backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: tracex-api
+    restart: unless-stopped
+    depends_on:
+      tracex-db:
+        condition: service_healthy
+      tracex-cache:
+        condition: service_started
+    environment:
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-tracex_user}:${POSTGRES_PASSWORD:-tracex_secure_pass}@tracex-db:5432/${POSTGRES_DB:-tracex_intelligence}
+      REDIS_URL: redis://tracex-cache:6379/0
+      JWT_SECRET: ${JWT_SECRET:-super_secret_jwt_key_sih2026}
+      ENV: development
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend:/app
+
+  # React 18 + Vite GIS Command Center Dashboard
+  tracex-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: tracex-dashboard
+    restart: unless-stopped
+    depends_on:
+      - tracex-backend
+    ports:
+      - "3000:80"
+
+volumes:
+  tracex_db_data:
+  tracex_redis_data:

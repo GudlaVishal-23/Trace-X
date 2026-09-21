@@ -1,0 +1,594 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config = {"darkMode":"class","theme":{"extend":{"colors":{"on-tertiary-container":"#6b000b","on-secondary":"#003918","inverse-primary":"#9f4200","surface-container-lowest":"#0a0e18","outline":"#a98a7c","surface-tint":"#ffb692","error":"#ffb4ab","surface-bright":"#353944","tertiary-fixed-dim":"#ffb3ad","secondary":"#7dffa2","on-secondary-fixed-variant":"#005226","primary":"#ffb692","error-container":"#93000a","tertiary":"#ffb3ad","secondary-container":"#05e777","surface-container-high":"#262a35","on-tertiary-fixed":"#410004","surface-container-highest":"#313540","on-secondary-container":"#00622e","on-primary-fixed":"#341100","surface-variant":"#313540","on-surface":"#dfe2f1","on-background":"#dfe2f1","surface-container":"#1b1f2a","inverse-surface":"#dfe2f1","tertiary-container":"#ff6963","inverse-on-surface":"#2c303b","on-primary":"#562000","on-tertiary-fixed-variant":"#930013","secondary-fixed-dim":"#00e475","surface":"#0f131d","primary-fixed":"#ffdbcb","secondary-fixed":"#62ff96","on-surface-variant":"#e2bfb0","on-error-container":"#ffdad6","primary-fixed-dim":"#ffb692","surface-container-low":"#171b26","primary-container":"#ff6d00","on-primary-container":"#582100","outline-variant":"#594136","on-error":"#690005","background":"#0f131d","on-secondary-fixed":"#00210b","on-primary-fixed-variant":"#7a3000","tertiary-fixed":"#ffdad7","surface-dim":"#0f131d","on-tertiary":"#68000a"},"borderRadius":{"DEFAULT":"0.125rem","lg":"0.25rem","xl":"0.5rem","full":"0.75rem"},"spacing":{"space-lg":"1.5rem","margin":"1rem","space-md":"1rem","space-xs":"0.25rem","space-xl":"2rem","space-sm":"0.5rem","margin-desktop":"2rem","gutter":"1rem","gutter-desktop":"1.5rem"},"fontFamily":{"body-md":["Inter"],"body-lg":["Inter"],"display-lg":["Inter"],"label-sm":["JetBrains Mono"],"label-md":["JetBrains Mono"],"headline-md":["Inter"],"headline-sm":["Inter"],"label-lg":["JetBrains Mono"],"body-sm":["Inter"],"headline-lg":["Inter"],"display-lg-mobile":["Inter"]},"fontSize":{"body-md":["14px",{"lineHeight":"20px","fontWeight":"400"}],"body-lg":["16px",{"lineHeight":"24px","fontWeight":"400"}],"display-lg":["36px",{"lineHeight":"44px","letterSpacing":"-0.02em","fontWeight":"700"}],"label-sm":["10px",{"lineHeight":"14px","letterSpacing":"0.06em","fontWeight":"500"}],"label-md":["12px",{"lineHeight":"16px","letterSpacing":"0.04em","fontWeight":"500"}],"headline-md":["20px",{"lineHeight":"28px","fontWeight":"600"}],"headline-sm":["16px",{"lineHeight":"24px","fontWeight":"600"}],"label-lg":["14px",{"lineHeight":"20px","letterSpacing":"0.02em","fontWeight":"600"}],"body-sm":["12px",{"lineHeight":"16px","fontWeight":"400"}],"headline-lg":["24px",{"lineHeight":"32px","letterSpacing":"-0.01em","fontWeight":"600"}],"display-lg-mobile":["28px",{"lineHeight":"36px","letterSpacing":"-0.01em","fontWeight":"700"}]}}}};</script></head><body class="bg-surface font-body-md text-body-md text-on-surface antialiased"><header class="fixed top-0 left-0 w-full z-50 bg-surface-container-lowest/90 backdrop-blur-xl border-b border-outline-variant/30"><div class="h-16 w-full px-gutter-desktop flex items-center justify-between gap-space-md"><div class="flex items-center gap-space-md min-w-max"><img alt="TRACE-X Emblem" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1WF6zIU8LGXsyGa1YJ9oOS5rvaypvur3Y9Aeo0UxWt72dvfPpwCGRXLwGy8Nyra8vGV1n6SiUmigrdXo3fZ62CwIn6dBhdQNeRNysSa6j8tdhpqvPe8vNz7IEWbcHBrWWtpC2KIVn2mWloKdtiebTPF7E6CA3gqwO2rsoI-bbQbtALJG3redS0h94PP4TLVKYgH-Wxm7NAji8jMYQwD6gcx5sjGBHafYD8AlnDqqZ106QmSgnYdyt-nHw"/><div class="flex flex-col"><div class="flex items-center gap-space-xs"><span class="font-headline-sm text-headline-sm font-bold tracking-wider text-on-surface uppercase">TRACE-X</span><span class="flex items-center gap-1 ml-1"><span class="w-2 h-2 rounded-full bg-primary-container animate-ping"></span><span class="w-2 h-2 rounded-full bg-secondary-container"></span></span></div><span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">SIH26127 • URBAN VEHICLE INTELLIGENCE</span></div></div><nav class="hidden xl:flex items-center gap-space-xs" data-active-classes="bg-surface-container-high text-primary border-b-2 border-primary-container font-semibold"><a class="px-space-md py-space-sm rounded text-on-surface-variant font-body-md text-body-md hover:bg-surface-container hover:text-on-surface transition-all" data-path="live-city-map" href="#">Live City Map</a><a class="px-space-md py-space-sm rounded text-on-surface-variant font-body-md text-body-md hover:bg-surface-container hover:text-on-surface transition-all" data-path="trajectory-search" href="#">Trajectory Search</a><a aria-current="page" class="px-space-md py-space-sm rounded transition-all bg-surface-container-high text-primary border-b-2 border-primary-container font-semibold" data-path="traffic-analytics" href="#">Traffic Analytics</a><a class="px-space-md py-space-sm rounded text-on-surface-variant font-body-md text-body-md hover:bg-surface-container hover:text-on-surface transition-all" data-path="watchlist-alerts" href="#">Watchlist &amp; Alerts</a></nav><div class="flex items-center gap-space-md min-w-max"><div class="hidden md:flex items-center gap-space-xs bg-surface-container-low px-space-sm py-space-xs rounded border border-outline-variant/30"><span class="w-2 h-2 rounded-full bg-secondary animate-pulse"></span><span class="font-label-sm text-label-sm text-secondary font-semibold">8 NODES ONLINE</span></div><div class="hidden lg:flex items-center gap-space-xs bg-surface-container-lowest px-space-sm py-space-xs rounded border border-outline-variant/20 font-label-sm text-label-sm text-on-surface"><span class="material-symbols-outlined text-[14px] text-on-surface-variant">schedule</span><span id="system-clock">14:28:42 UTC | 19:58:42 IST</span></div><div class="hidden 2xl:flex items-center gap-1 font-label-sm text-label-sm text-secondary-fixed-dim"><span class="material-symbols-outlined text-[14px]">wifi_tethering</span><span>14ms</span></div><div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div></div></div></header><aside class="fixed left-0 top-16 h-[calc(100vh-4rem)] w-64 bg-surface-container-lowest/80 backdrop-blur-xl border-r border-outline-variant/30 z-40 flex flex-col justify-between py-space-md"><div class="px-space-md flex flex-col gap-space-md"><div class="font-label-sm text-label-sm uppercase tracking-widest text-on-surface-variant px-space-sm">Tactical Routing</div><nav class="flex flex-col gap-space-xs" data-active-classes="bg-surface-container-high text-primary font-semibold"><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded text-on-surface-variant font-body-md text-body-md hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="live-city-map" href="#"><span class="material-symbols-outlined text-[20px]">map</span><span>Live City Map</span></a><a class="flex items-center gap-space-sm px-space-sm py-space-sm rounded text-on-surface-variant font-body-md text-body-md hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="trajectory-search" href="#"><span class="material-symbols-outlined text-[20px]">alt_route</span><span>Trajectory Search</span></a><a aria-current="page" class="flex items-center gap-space-sm px-space-sm py-space-sm rounded transition-colors bg-surface-container-high text-primary font-semibold" data-path="traffic-analytics" href="#"><span class="material-symbols-outlined text-[20px]">analytics</span><span>Traffic Analytics</span></a><a class="flex items-center justify-between px-space-sm py-space-sm rounded text-on-surface-variant font-body-md text-body-md hover:bg-surface-container-high hover:text-on-surface transition-colors" data-path="watchlist-alerts" href="#"><div class="flex items-center gap-space-sm"><span class="material-symbols-outlined text-[20px]">notifications_active</span><span>Watchlist &amp; Alerts</span></div><span class="bg-primary-container text-on-primary-container font-label-sm text-label-sm px-space-xs py-0.5 rounded font-bold">3</span></a></nav></div><div class="px-space-md flex flex-col gap-space-xs border-t border-outline-variant/20 pt-space-md"><div class="flex items-center justify-between font-label-sm text-label-sm text-on-surface-variant px-space-sm"><span>CORE ENGINE</span><span class="text-secondary">ONLINE</span></div><div class="flex items-center justify-between font-label-sm text-label-sm text-on-surface-variant px-space-sm"><span>ANPR PIPELINE</span><span class="text-secondary">SYNCED</span></div></div></aside><div class="pl-64"><main class="w-full pt-16 bg-surface min-h-screen"><div class="flex flex-col w-full p-gutter-desktop gap-space-lg">
+<!-- Macro Context Ribbon -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-space-md pb-space-xs">
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-sm text-label-sm text-secondary tracking-widest uppercase">Telemetry Matrix // Realtime Synthesis</span>
+<span class="w-1.5 h-1.5 rounded-full bg-secondary animate-pulse"></span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Live Ingestion Active</span>
+</div>
+<div class="flex items-baseline gap-space-md">
+<h1 class="font-headline-lg text-headline-lg font-bold text-on-surface tracking-tight">MACRO TRAFFIC ANALYTICS</h1>
+<span class="font-label-md text-label-md text-on-surface-variant">HYDERABAD METROPOLITAN REGION</span>
+</div>
+</div>
+<!-- Timeframe & Tactical Selector -->
+<div class="flex items-center gap-space-xs bg-surface-container-low p-space-xs rounded-lg border-0 shadow-sm">
+<button class="px-space-md py-space-xs rounded font-label-md text-label-md bg-surface-container-highest text-primary transition-all font-semibold">24H CYCLE</button>
+<button class="px-space-md py-space-xs rounded font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-all">PEAK WINDOWS</button>
+<button class="px-space-md py-space-xs rounded font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-all">7D HISTORIC</button>
+<div class="w-px h-4 bg-surface-variant mx-space-xs"></div>
+<button class="flex items-center gap-space-xs px-space-sm py-space-xs rounded bg-surface-container text-on-surface hover:bg-surface-bright transition-all font-label-md text-label-md">
+<span class="material-symbols-outlined text-[16px] text-secondary">tune</span>
+<span>Filter Nodes</span>
+</button>
+</div>
+</div>
+<!-- Top Macro Stat Banners (3 high-impact cards) -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-space-md">
+<!-- Banner 1: Vehicles Tracked -->
+<div class="relative overflow-hidden bg-surface-container-low rounded-xl p-space-md flex flex-col justify-between shadow-md">
+<div class="absolute -right-8 -top-8 w-28 h-28 rounded-full bg-primary/5 blur-2xl pointer-events-none"></div>
+<div class="flex items-center justify-between pb-space-sm">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px] text-primary">directions_car</span>
+          Vehicles Tracked Today
+        </span>
+<span class="inline-flex items-center gap-1 px-space-xs py-0.5 rounded font-label-sm text-label-sm bg-secondary/15 text-secondary font-semibold">
+<span class="material-symbols-outlined text-[12px]">trending_up</span>
+          +14.2% vs y'day
+        </span>
+</div>
+<div class="flex items-baseline gap-space-xs my-space-xs">
+<span class="font-display-lg text-display-lg font-bold text-on-surface tracking-tight">248,910</span>
+<span class="font-label-md text-label-md text-on-surface-variant font-medium">UNITS</span>
+</div>
+<div class="flex items-center gap-space-xs pt-space-xs">
+<span class="w-1.5 h-1.5 rounded-full bg-primary"></span>
+<span class="font-body-sm text-body-sm text-on-surface-variant">Across 8 camera sectors &amp; 14 arterial corridors</span>
+</div>
+</div>
+<!-- Banner 2: Velocity -->
+<div class="relative overflow-hidden bg-surface-container-low rounded-xl p-space-md flex flex-col justify-between shadow-md">
+<div class="absolute -right-8 -top-8 w-28 h-28 rounded-full bg-secondary/5 blur-2xl pointer-events-none"></div>
+<div class="flex items-center justify-between pb-space-sm">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[15px] text-secondary">speed</span>
+          City Transit Velocity
+        </span>
+<span class="inline-flex items-center gap-1 px-space-xs py-0.5 rounded font-label-sm text-label-sm bg-secondary-container/20 text-secondary-container font-semibold">
+<span class="material-symbols-outlined text-[12px]">arrow_upward</span>
+          +3.1 km/h post peak
+        </span>
+</div>
+<div class="flex items-baseline gap-space-xs my-space-xs">
+<span class="font-display-lg text-display-lg font-bold text-on-surface tracking-tight">34.8</span>
+<span class="font-label-lg text-label-lg text-on-surface-variant font-semibold">km/h</span>
+</div>
+<div class="flex items-center justify-between pt-space-xs font-body-sm text-body-sm">
+<span class="text-on-surface-variant">Optimal urban threshold: 38.0 km/h</span>
+<span class="font-label-sm text-label-sm text-secondary font-semibold">91.6% EFFICIENCY</span>
+</div>
+</div>
+<!-- Banner 3: Active Congestion Bottlenecks -->
+<div class="relative overflow-hidden bg-surface-container-low rounded-xl p-space-md flex flex-col justify-between shadow-md">
+<div class="absolute -right-8 -bottom-8 w-32 h-32 rounded-full bg-primary-container/10 blur-3xl pointer-events-none"></div>
+<div class="flex items-center justify-between pb-space-sm">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-primary font-semibold flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px] text-primary-container">warning</span>
+          Bottleneck Incidents
+        </span>
+<span class="flex items-center gap-1.5 px-space-xs py-0.5 rounded bg-primary-container/20 text-primary-container font-label-sm text-label-sm font-bold">
+<span class="w-1.5 h-1.5 rounded-full bg-primary-container animate-ping"></span>
+          CRITICAL
+        </span>
+</div>
+<div class="flex items-baseline gap-space-xs my-space-xs">
+<span class="font-display-lg text-display-lg font-bold text-primary-container tracking-tight">3</span>
+<span class="font-headline-sm text-headline-sm text-on-surface font-semibold">Active Congestion Bottlenecks</span>
+</div>
+<div class="flex flex-wrap items-center gap-space-xs pt-space-xs font-label-sm text-label-sm">
+<span class="px-space-xs py-0.5 rounded bg-surface-container-high text-primary-fixed-dim">Begumpet (12 km/h)</span>
+<span class="px-space-xs py-0.5 rounded bg-surface-container-high text-on-surface-variant">Gachibowli ORR</span>
+<span class="px-space-xs py-0.5 rounded bg-surface-container-high text-on-surface-variant">Secunderabad Stn</span>
+</div>
+</div>
+</div>
+<!-- Primary Analytic Grid -->
+<div class="grid grid-cols-1 xl:grid-cols-12 gap-space-lg items-start">
+<!-- LEFT MAIN SECTION (~48% -> xl:col-span-6): Modal Distribution & Volume Classification -->
+<div class="xl:col-span-6 flex flex-col gap-space-lg">
+<!-- Modal Distribution Card -->
+<div class="bg-surface-container-low rounded-xl p-space-lg flex flex-col gap-space-md shadow-md">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary text-[20px]">donut_small</span>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">Vehicle Modal Distribution</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Classification by Deep CNN Edge Detectors</span>
+</div>
+</div>
+<div class="flex items-center gap-space-xs bg-surface-container px-space-sm py-space-xs rounded font-label-sm text-label-sm text-on-surface">
+<span class="material-symbols-outlined text-[13px] text-secondary">verified</span>
+<span>99.4% Precision</span>
+</div>
+</div>
+<!-- Progress Metrics Stack -->
+<div class="flex flex-col gap-space-md pt-space-xs">
+<!-- Two-wheelers -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between font-label-sm text-label-sm">
+<span class="flex items-center gap-space-xs text-on-surface font-semibold">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+                Two-Wheelers (Motorcycles &amp; Scooters)
+              </span>
+<div class="flex items-baseline gap-space-sm">
+<span class="font-mono text-on-surface-variant font-label-sm text-label-sm">104,542 units</span>
+<span class="font-bold text-secondary font-label-md text-label-md">42%</span>
+</div>
+</div>
+<div class="w-full h-2.5 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-secondary rounded-full" style="width: 42%;"></div>
+</div>
+</div>
+<!-- Passenger Cars -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between font-label-sm text-label-sm">
+<span class="flex items-center gap-space-xs text-on-surface font-semibold">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+                Passenger Cars (SUVs, Sedans, Cabs)
+              </span>
+<div class="flex items-baseline gap-space-sm">
+<span class="font-mono text-on-surface-variant font-label-sm text-label-sm">89,607 units</span>
+<span class="font-bold text-primary font-label-md text-label-md">36%</span>
+</div>
+</div>
+<div class="w-full h-2.5 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-primary rounded-full" style="width: 36%;"></div>
+</div>
+</div>
+<!-- Auto-rickshaws -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between font-label-sm text-label-sm">
+<span class="flex items-center gap-space-xs text-on-surface font-semibold">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+                Auto-Rickshaws (3-Wheelers)
+              </span>
+<div class="flex items-baseline gap-space-sm">
+<span class="font-mono text-on-surface-variant font-label-sm text-label-sm">29,869 units</span>
+<span class="font-bold text-tertiary font-label-md text-label-md">12%</span>
+</div>
+</div>
+<div class="w-full h-2.5 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-tertiary rounded-full" style="width: 12%;"></div>
+</div>
+</div>
+<!-- Commercial & Buses -->
+<div class="flex flex-col gap-space-xs">
+<div class="flex items-center justify-between font-label-sm text-label-sm">
+<span class="flex items-center gap-space-xs text-on-surface font-semibold">
+<span class="w-2 h-2 rounded-full bg-primary-container"></span>
+                Heavy Commercial Vehicles &amp; City Buses
+              </span>
+<div class="flex items-baseline gap-space-sm">
+<span class="font-mono text-on-surface-variant font-label-sm text-label-sm">24,892 units</span>
+<span class="font-bold text-primary-container font-label-md text-label-md">10%</span>
+</div>
+</div>
+<div class="w-full h-2.5 bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-primary-container rounded-full" style="width: 10%;"></div>
+</div>
+</div>
+</div>
+<!-- Mini Visual Classification Feed Tag -->
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-space-sm pt-space-sm">
+<div class="bg-surface-container p-space-sm rounded-lg flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">COMMUTER EV %</span>
+<span class="font-headline-sm text-headline-sm font-bold text-secondary">16.4%</span>
+<span class="font-label-sm text-label-sm text-secondary font-medium">+2.8% MoM</span>
+</div>
+<div class="bg-surface-container p-space-sm rounded-lg flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">AVG OCCUPANCY</span>
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">1.42</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Pax / Car</span>
+</div>
+<div class="bg-surface-container p-space-sm rounded-lg flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">HSRP COMPLIANCE</span>
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">97.8%</span>
+<span class="font-label-sm text-label-sm text-secondary font-medium">Valid</span>
+</div>
+<div class="bg-surface-container p-space-sm rounded-lg flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">UNREGISTERED</span>
+<span class="font-headline-sm text-headline-sm font-bold text-primary-container">42</span>
+<span class="font-label-sm text-label-sm text-primary-container font-medium">Flagged</span>
+</div>
+</div>
+</div>
+<!-- Hourly Volume Peak Curve Graph -->
+<div class="bg-surface-container-low rounded-xl p-space-lg flex flex-col gap-space-md shadow-md">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-xs">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-secondary text-[20px]">ssid_chart</span>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">Hourly Volume Ingestion Peak Curve</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Bimodal Congestion Surge Distribution</span>
+</div>
+</div>
+<div class="flex items-center gap-space-md font-label-sm text-label-sm">
+<div class="flex items-center gap-1.5">
+<span class="w-3 h-0.5 bg-primary-container"></span>
+<span class="text-on-surface-variant">Peak Band</span>
+</div>
+<div class="flex items-center gap-1.5">
+<span class="w-3 h-0.5 bg-secondary"></span>
+<span class="text-on-surface">Current Volume</span>
+</div>
+</div>
+</div>
+<!-- Inline SVG Volume Telemetry Graph -->
+<div class="w-full bg-surface-container-lowest p-space-md rounded-lg flex flex-col gap-space-xs">
+<div class="h-44 w-full relative">
+<svg class="w-full h-full overflow-visible" preserveaspectratio="none" viewbox="0 0 540 160">
+<defs>
+<lineargradient id="curveFill" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#7dffa2" stop-opacity="0.3"></stop>
+<stop offset="100%" stop-color="#7dffa2" stop-opacity="0"></stop>
+</lineargradient>
+<lineargradient id="peakHighlight" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="#ff6d00" stop-opacity="0.25"></stop>
+<stop offset="100%" stop-color="#ff6d00" stop-opacity="0.02"></stop>
+</lineargradient>
+</defs>
+<!-- Grid Horizontal Guide Lines -->
+<line stroke="#313540" stroke-dasharray="3,3" stroke-width="0.75" x1="0" x2="540" y1="30" y2="30"></line>
+<line stroke="#313540" stroke-dasharray="3,3" stroke-width="0.75" x1="0" x2="540" y1="75" y2="75"></line>
+<line stroke="#313540" stroke-dasharray="3,3" stroke-width="0.75" x1="0" x2="540" y1="120" y2="120"></line>
+<!-- Morning Peak Zone Box (09:00 - 11:30 -> ~180 to ~250) -->
+<rect fill="url(#peakHighlight)" height="135" rx="3" width="70" x="180" y="10"></rect>
+<!-- Evening Peak Zone Box (17:30 - 20:30 -> ~360 to ~440) -->
+<rect fill="url(#peakHighlight)" height="135" rx="3" width="85" x="360" y="10"></rect>
+<!-- Main Trajectory Area & Path -->
+<path d="M 0 142 Q 45 140 90 135 T 180 60 T 215 32 T 250 78 T 320 95 T 380 26 T 430 40 T 480 110 T 540 130 L 540 150 L 0 150 Z" fill="url(#curveFill)"></path>
+<path d="M 0 142 Q 45 140 90 135 T 180 60 T 215 32 T 250 78 T 320 95 T 380 26 T 430 40 T 480 110 T 540 130" fill="none" stroke="#7dffa2" stroke-linecap="round" stroke-width="2.5"></path>
+<!-- Peak Dots -->
+<circle cx="215" cy="32" fill="#ff6d00" r="4" stroke="#0f131d" stroke-width="2"></circle>
+<circle cx="380" cy="26" fill="#ff6d00" r="4" stroke="#0f131d" stroke-width="2"></circle>
+<!-- Current Time Indicator Line (e.g. 19:58 IST -> ~425) -->
+<line stroke="#ffb692" stroke-dasharray="2,2" stroke-width="1.5" x1="422" x2="422" y1="15" y2="148"></line>
+<circle cx="422" cy="36" fill="#ffb692" r="3.5"></circle>
+</svg>
+</div>
+<div class="flex justify-between items-center font-label-sm text-label-sm text-on-surface-variant pt-space-xs px-1">
+<span>00:00</span>
+<span>04:00</span>
+<span>08:00</span>
+<span class="text-primary-container font-semibold">AM PEAK (09:00-11:30)</span>
+<span>14:00</span>
+<span class="text-primary-container font-semibold">PM PEAK (17:30-20:30)</span>
+<span>23:59</span>
+</div>
+</div>
+<!-- Speed Distribution Histogram -->
+<div class="flex flex-col gap-space-sm pt-space-xs">
+<div class="flex items-center justify-between">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Speed Dispersion Histogram (Active Fleet)</span>
+<span class="font-label-sm text-label-sm text-secondary font-mono">μ = 34.8 km/h | σ = 8.4</span>
+</div>
+<div class="grid grid-cols-4 gap-space-xs">
+<!-- <20 km/h -->
+<div class="bg-surface-container p-space-sm rounded-lg flex flex-col justify-end gap-space-xs">
+<div class="h-16 w-full flex items-end">
+<div class="w-full bg-error-container/80 rounded-t" style="height: 33%;"></div>
+</div>
+<div class="flex items-baseline justify-between font-label-sm text-label-sm">
+<span class="text-error font-bold">18%</span>
+<span class="text-on-surface-variant">&lt;20 km/h</span>
+</div>
+</div>
+<!-- 20-40 km/h -->
+<div class="bg-surface-container p-space-sm rounded-lg flex flex-col justify-end gap-space-xs">
+<div class="h-16 w-full flex items-end">
+<div class="w-full bg-secondary rounded-t" style="height: 100%;"></div>
+</div>
+<div class="flex items-baseline justify-between font-label-sm text-label-sm">
+<span class="text-secondary font-bold">54%</span>
+<span class="text-on-surface font-semibold">20-40 km/h</span>
+</div>
+</div>
+<!-- 40-60 km/h -->
+<div class="bg-surface-container p-space-sm rounded-lg flex flex-col justify-end gap-space-xs">
+<div class="h-16 w-full flex items-end">
+<div class="w-full bg-primary rounded-t" style="height: 41%;"></div>
+</div>
+<div class="flex items-baseline justify-between font-label-sm text-label-sm">
+<span class="text-primary font-bold">22%</span>
+<span class="text-on-surface-variant">40-60 km/h</span>
+</div>
+</div>
+<!-- >60 km/h -->
+<div class="bg-surface-container p-space-sm rounded-lg flex flex-col justify-end gap-space-xs">
+<div class="h-16 w-full flex items-end">
+<div class="w-full bg-primary-container rounded-t" style="height: 12%;"></div>
+</div>
+<div class="flex items-baseline justify-between font-label-sm text-label-sm">
+<span class="text-primary-container font-bold">6%</span>
+<span class="text-on-surface-variant">&gt;60 km/h</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- RIGHT MAIN SECTION (~52% -> xl:col-span-6): Origin-Destination (OD) Zonal Flow Matrix -->
+<div class="xl:col-span-6 flex flex-col gap-space-lg">
+<!-- OD Matrix Heatmap Container -->
+<div class="bg-surface-container-low rounded-xl p-space-lg flex flex-col gap-space-md shadow-md">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-xs">
+<div class="flex items-center gap-space-sm">
+<span class="material-symbols-outlined text-primary-container text-[20px]">hub</span>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">Origin-Destination (OD) Zonal Flow Matrix</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Inter-District Vector Handoffs (Trips / 24h)</span>
+</div>
+</div>
+<span class="font-label-sm text-label-sm text-secondary bg-surface-container px-space-sm py-0.5 rounded font-mono">
+            SYNCED: 19:58 IST
+          </span>
+</div>
+<!-- Heatmap Grid Table -->
+<div class="overflow-x-auto w-full">
+<table class="w-full border-collapse font-label-sm text-label-sm">
+<thead>
+<tr>
+<th class="p-space-xs text-left text-on-surface-variant font-label-sm text-label-sm font-mono uppercase tracking-wider">
+                  ORIGIN \ DEST
+                </th>
+<th class="p-space-xs text-center text-on-surface font-semibold bg-surface-container/40 rounded-t">
+<div class="flex flex-col">
+<span>NORTH</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-normal">Kompally</span>
+</div>
+</th>
+<th class="p-space-xs text-center text-on-surface font-semibold bg-surface-container/40 rounded-t">
+<div class="flex flex-col">
+<span>EAST</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-normal">Uppal/LB</span>
+</div>
+</th>
+<th class="p-space-xs text-center text-on-surface font-semibold bg-surface-container/40 rounded-t">
+<div class="flex flex-col">
+<span>CENTRAL</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-normal">Banjara</span>
+</div>
+</th>
+<th class="p-space-xs text-center text-on-surface font-semibold bg-surface-container/40 rounded-t">
+<div class="flex flex-col">
+<span>WEST</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-normal">HITEC/Gach</span>
+</div>
+</th>
+</tr>
+</thead>
+<tbody class="divide-y-0">
+<!-- ROW 1: NORTH -->
+<tr>
+<td class="p-space-xs text-on-surface font-semibold bg-surface-container/40 rounded-l">
+<div class="flex flex-col">
+<span>NORTH ZONE</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-normal">Secunderabad</span>
+</div>
+</td>
+<td class="p-space-xs">
+<div class="p-space-sm rounded bg-surface-container-lowest text-center flex flex-col">
+<span class="font-mono text-on-surface-variant font-semibold">14,210</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Internal</span>
+</div>
+</td>
+<td class="p-space-xs">
+<div class="p-space-sm rounded bg-secondary/10 text-center flex flex-col">
+<span class="font-mono text-secondary font-semibold">18,920</span>
+<span class="font-label-sm text-label-sm text-secondary">Smooth</span>
+</div>
+</td>
+<td class="p-space-xs">
+<div class="p-space-sm rounded bg-secondary/25 text-center flex flex-col">
+<span class="font-mono text-secondary font-bold">31,400</span>
+<span class="font-label-sm text-label-sm text-secondary font-medium">Moderate</span>
+</div>
+</td>
+<td class="p-space-xs">
+<div class="p-space-sm rounded bg-primary/20 text-center flex flex-col">
+<span class="font-mono text-primary font-semibold">22,140</span>
+<span class="font-label-sm text-label-sm text-primary">Elevated</span>
+</div>
+</td>
+</tr>
+<!-- ROW 2: EAST -->
+<tr>
+<td class="p-space-xs text-on-surface font-semibold bg-surface-container/40 rounded-l">
+<div class="flex flex-col">
+<span>EAST ZONE</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-normal">Uppal / LB Nagar</span>
+</div>
+</td>
+<td class="p-space-xs">
+<div class="p-space-sm rounded bg-secondary/15 text-center flex flex-col">
+<span class="font-mono text-secondary font-semibold">16,400</span>
+<span class="font-label-sm text-label-sm text-secondary">Smooth</span>
+</div>
+</td>
+<td class="p-space-xs">
+<div class="p-space-sm rounded bg-surface-container-lowest text-center flex flex-col">
+<span class="font-mono text-on-surface-variant font-semibold">11,050</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Internal</span>
+</div>
+</td>
+<td class="p-space-xs">
+<div class="p-space-sm rounded bg-primary/25 text-center flex flex-col">
+<span class="font-mono text-primary font-bold">29,820</span>
+<span class="font-label-sm text-label-sm text-primary">Heavy</span>
+</div>
+</td>
+<td class="p-space-xs">
+<div class="p-space-sm rounded bg-primary/30 text-center flex flex-col">
+<span class="font-mono text-primary-container font-bold">35,110</span>
+<span class="font-label-sm text-label-sm text-primary-container">Corridor Surge</span>
+</div>
+</td>
+</tr>
+<!-- ROW 3: CENTRAL -->
+<tr>
+<td class="p-space-xs text-on-surface font-semibold bg-surface-container/40 rounded-l">
+<div class="flex flex-col">
+<span>CENTRAL ZONE</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-normal">Banjara / Panjagutta</span>
+</div>
+</td>
+<td class="p-space-xs">
+<div class="p-space-sm rounded bg-secondary/20 text-center flex flex-col">
+<span class="font-mono text-secondary font-semibold">24,300</span>
+<span class="font-label-sm text-label-sm text-secondary">Steady</span>
+</div>
+</td>
+<td class="p-space-xs">
+<div class="p-space-sm rounded bg-secondary/20 text-center flex flex-col">
+<span class="font-mono text-secondary font-semibold">27,650</span>
+<span class="font-label-sm text-label-sm text-secondary">Steady</span>
+</div>
+</td>
+<td class="p-space-xs">
+<div class="p-space-sm rounded bg-surface-container-lowest text-center flex flex-col">
+<span class="font-mono text-on-surface-variant font-semibold">19,450</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Internal</span>
+</div>
+</td>
+<!-- PEAK CELL: Central -> West (52,190) -->
+<td class="p-space-xs">
+<div class="p-space-sm rounded bg-primary-container/30 text-center flex flex-col shadow-sm relative overflow-hidden">
+<div class="absolute top-0 right-0 w-2 h-2 bg-primary-container"></div>
+<span class="font-mono text-primary-container font-bold text-label-md">52,190</span>
+<span class="font-label-sm text-label-sm text-primary-container font-bold">Peak Rush (Max)</span>
+</div>
+</td>
+</tr>
+<!-- ROW 4: WEST -->
+<tr>
+<td class="p-space-xs text-on-surface font-semibold bg-surface-container/40 rounded-l">
+<div class="flex flex-col">
+<span>WEST ZONE</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-normal">HITEC / Gachibowli</span>
+</div>
+</td>
+<td class="p-space-xs">
+<div class="p-space-sm rounded bg-secondary/15 text-center flex flex-col">
+<span class="font-mono text-secondary font-semibold">19,840</span>
+<span class="font-label-sm text-label-sm text-secondary">Smooth</span>
+</div>
+</td>
+<td class="p-space-xs">
+<div class="p-space-sm rounded bg-primary/25 text-center flex flex-col">
+<span class="font-mono text-primary font-semibold">28,900</span>
+<span class="font-label-sm text-label-sm text-primary">Elevated</span>
+</div>
+</td>
+<!-- HEAVY CELL: West -> Central (48,210) -->
+<td class="p-space-xs">
+<div class="p-space-sm rounded bg-primary-container/25 text-center flex flex-col">
+<span class="font-mono text-primary-container font-bold">48,210</span>
+<span class="font-label-sm text-label-sm text-primary-container font-semibold">High Density</span>
+</div>
+</td>
+<td class="p-space-xs">
+<div class="p-space-sm rounded bg-surface-container-lowest text-center flex flex-col">
+<span class="font-mono text-on-surface-variant font-semibold">23,880</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">Internal</span>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<!-- Heatmap Legend Indicator -->
+<div class="flex items-center justify-between pt-space-xs px-space-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Flow Saturation Gradient</span>
+<div class="flex items-center gap-space-xs font-label-sm text-label-sm">
+<span class="text-on-surface-variant">Low (&lt;15k)</span>
+<div class="flex h-2 w-28 rounded-full overflow-hidden">
+<span class="h-full w-1/4 bg-surface-container-highest"></span>
+<span class="h-full w-1/4 bg-secondary"></span>
+<span class="h-full w-1/4 bg-primary"></span>
+<span class="h-full w-1/4 bg-primary-container"></span>
+</div>
+<span class="text-primary-container font-bold">High (&gt;50k)</span>
+</div>
+</div>
+</div>
+<!-- Bottom Analytical Insights Card: AI Congestion Mitigation Advisory -->
+<div class="bg-surface-container-low rounded-xl p-space-lg flex flex-col gap-space-md shadow-md relative overflow-hidden">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-sm">
+<div class="w-8 h-8 rounded-lg bg-primary-container/20 flex items-center justify-center">
+<span class="material-symbols-outlined text-primary-container text-[20px]">smart_toy</span>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">AI Congestion Mitigation Advisory</span>
+<span class="font-label-sm text-label-sm text-primary font-mono">NEURAL OPTIMIZER // MODEL TR-X-V4</span>
+</div>
+</div>
+<span class="px-space-sm py-0.5 rounded bg-secondary-container/20 text-secondary-container font-label-sm text-label-sm font-bold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-secondary-container"></span>
+            ACTIONABLE
+          </span>
+</div>
+<!-- Recommendation Body -->
+<div class="bg-surface-container p-space-md rounded-lg flex flex-col gap-space-sm">
+<div class="flex items-start gap-space-sm">
+<span class="material-symbols-outlined text-primary-container text-[20px] shrink-0 mt-0.5">traffic</span>
+<div class="flex flex-col gap-space-xs">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">
+                Apply Dynamic Signal Offset: +15s Green Window at Panjagutta Intersection
+              </span>
+<p class="font-body-md text-body-md text-on-surface-variant">
+                Zonal OD handoff from <span class="text-on-surface font-semibold">Central to West (52,190 trips)</span> is causing a 2.4 km tailback spanning toward Nagarjuna Circle. Extending outbound phase clearance will absorb spillover and restore corridor velocity from <span class="text-error font-semibold">14 km/h</span> to <span class="text-secondary font-semibold">28 km/h</span> within 18 minutes.
+              </p>
+</div>
+</div>
+<!-- Quick Metrics Bar -->
+<div class="grid grid-cols-3 gap-space-sm pt-space-xs">
+<div class="bg-surface-container-high p-space-sm rounded flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">EST. DELAY SAVED</span>
+<span class="font-headline-sm text-headline-sm font-bold text-secondary font-mono">-7.4 min</span>
+</div>
+<div class="bg-surface-container-high p-space-sm rounded flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">CO₂ EMISSION DROP</span>
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface font-mono">-1.8 Tons</span>
+</div>
+<div class="bg-surface-container-high p-space-sm rounded flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">SIMULATED CONFIDENCE</span>
+<span class="font-headline-sm text-headline-sm font-bold text-primary font-mono">94.8%</span>
+</div>
+</div>
+</div>
+<!-- Action Controls -->
+<div class="flex flex-wrap items-center justify-between gap-space-sm pt-space-xs">
+<div class="flex items-center gap-space-xs font-label-sm text-label-sm text-on-surface-variant">
+<span class="material-symbols-outlined text-[16px] text-secondary">check_circle</span>
+<span>SCATS / ITMS Controller link authorized</span>
+</div>
+<div class="flex items-center gap-space-sm">
+<button class="px-space-md py-space-sm rounded bg-surface-container-high text-on-surface hover:bg-surface-bright transition-all font-body-md text-body-md font-medium">
+              Simulate Wave
+            </button>
+<button class="flex items-center gap-space-xs px-space-md py-space-sm rounded bg-primary-container text-on-primary-container font-headline-sm text-headline-sm font-bold shadow-md hover:opacity-95 transition-all">
+<span class="material-symbols-outlined text-[18px]">bolt</span>
+<span>Deploy Signal Override</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div></main></div></body></html>
