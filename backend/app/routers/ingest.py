@@ -5,7 +5,7 @@ import logging
 from concurrent.futures import ThreadPoolExecutor
 from typing import List, Optional
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException, Depends, Request, WebSocket, WebSocketDisconnect
-from fastapi.responses import StreamingResponse, JSONResponse
+from fastapi.responses import StreamingResponse, JSONResponse, FileResponse
 from sqlalchemy.orm import Session
 
 from backend.app.database import get_db, SessionLocal
@@ -17,72 +17,26 @@ logger = logging.getLogger("tracex.ingest_router")
 router = APIRouter(prefix="/ingest", tags=["Video Ingestion & Scan Theatre"])
 ws_router = APIRouter(tags=["Video Ingestion WebSocket"])
 
-# ThreadPoolExecutor owned by backend (Section 1.2: max_workers=2)
-ingest_pool = ThreadPoolExecutor(max_workers=2, thread_name_prefix="tracex_ingest")
+from backend.app.config import (
+    MAX_UPLOAD_MB,
+    MAX_FILE_SIZE,
+    MAX_CONCURRENT_JOBS,
+    UPLOADS_DIR,
+    SAMPLE_VIDEOS_DIR,
+    ANNOTATED_DIR,
+    DEMO_MODE
+)
+
+# ThreadPoolExecutor bounded by MAX_CONCURRENT_JOBS (Part D.6)
+ingest_pool = ThreadPoolExecutor(max_workers=MAX_CONCURRENT_JOBS, thread_name_prefix="tracex_ingest")
 
 ALLOWED_EXTENSIONS = {".mp4", ".avi", ".mov", ".mkv"}
-MAX_FILE_SIZE = 500 * 1024 * 1024 # 500 MB
-
-def range_streamer(file_path: str, start: int, length: int, chunk_size: int = 64 * 1024):
-    """Yields chunks of a file within a byte range for HTTP 206 streaming."""
-    with open(file_path, "rb") as f:
-        f.seek(start)
-        remaining = length
-        while remaining > 0:
-            bytes_to_read = min(remaining, chunk_size)
-            data = f.read(bytes_to_read)
-            if not data:
-                break
-            remaining -= len(data)
-            yield data
 
 def build_range_response(file_path: str, request: Request, content_type: str = "video/mp4"):
-    """Handles HTTP Range requests enabling seeking in Chrome and Safari video players."""
+    """Serves video file with native HTTP Range support, partial content 206, and seek support."""
     if not os.path.exists(file_path):
         raise HTTPException(status_code=404, detail="Requested video artifact not found")
-
-    file_size = os.path.getsize(file_path)
-    range_header = request.headers.get("Range")
-
-    if not range_header:
-        # Full file streaming
-        return StreamingResponse(
-            range_streamer(file_path, 0, file_size),
-            status_code=200,
-            headers={
-                "Accept-Ranges": "bytes",
-                "Content-Length": str(file_size),
-                "Content-Type": content_type
-            }
-        )
-
-    # Parse Range: bytes=start-end
-    try:
-        range_value = range_header.strip().split("=")[1]
-        parts = range_value.split("-")
-        start = int(parts[0]) if parts[0] else 0
-        end = int(parts[1]) if len(parts) > 1 and parts[1] else file_size - 1
-        end = min(end, file_size - 1)
-        length = end - start + 1
-
-        headers = {
-            "Content-Range": f"bytes {start}-{end}/{file_size}",
-            "Accept-Ranges": "bytes",
-            "Content-Length": str(length),
-            "Content-Type": content_type
-        }
-        return StreamingResponse(range_streamer(file_path, start, length), status_code=206, headers=headers)
-    except Exception as e:
-        logger.error(f"Range parsing error: {e}")
-        return StreamingResponse(
-            range_streamer(file_path, 0, file_size),
-            status_code=200,
-            headers={
-                "Accept-Ranges": "bytes",
-                "Content-Length": str(file_size),
-                "Content-Type": content_type
-            }
-        )
+    return FileResponse(file_path, media_type=content_type)
 
 import shutil
 
@@ -95,11 +49,19 @@ async def upload_video(
 ):
     """
     Accepts video upload or server preset filename + camera_id.
-    Validates file extension and size (<= 500 MB).
+    Enforces concurrency cap (MAX_CONCURRENT_JOBS) and upload size limit (MAX_UPLOAD_MB).
     Saves file to data/uploads/{job_id}{ext} and queues async worker.
     """
     if not file and not preset_filename:
         raise HTTPException(status_code=400, detail="Either video file or preset_filename must be provided")
+
+    # Concurrency limit guard (Part D.6)
+    active_jobs = db.query(IngestJob).filter(IngestJob.status.in_(["QUEUED", "PROBING", "PROCESSING"])).count()
+    if active_jobs >= MAX_CONCURRENT_JOBS:
+        raise HTTPException(
+            status_code=429,
+            detail=f"Processing queue full ({active_jobs}/{MAX_CONCURRENT_JOBS} active jobs). Please wait for active jobs to complete."
+        )
 
     # Verify camera exists
     camera = db.query(Camera).filter(Camera.camera_id == camera_id).first()
@@ -107,7 +69,7 @@ async def upload_video(
         raise HTTPException(status_code=404, detail=f"Camera node {camera_id} not registered in topology")
 
     job_id = str(uuid.uuid4())
-    upload_dir = os.path.join(os.getcwd(), "data", "uploads")
+    upload_dir = str(UPLOADS_DIR)
     os.makedirs(upload_dir, exist_ok=True)
 
     if preset_filename:
@@ -115,6 +77,7 @@ async def upload_video(
         _, ext = os.path.splitext(filename)
         ext = ext.lower()
         src_candidates = [
+            str(SAMPLE_VIDEOS_DIR / preset_filename),
             os.path.join(os.getcwd(), "sample videos", preset_filename),
             os.path.join(os.getcwd(), "scratch", preset_filename)
         ]
@@ -143,7 +106,7 @@ async def upload_video(
                     dest.close()
                     if os.path.exists(saved_video_path):
                         os.remove(saved_video_path)
-                    raise HTTPException(status_code=413, detail=f"Video exceeds maximum allowed size of 500 MB")
+                    raise HTTPException(status_code=413, detail=f"Video exceeds maximum allowed size of {MAX_UPLOAD_MB} MB")
                 dest.write(chunk)
 
     # Create job in database
@@ -155,6 +118,8 @@ async def upload_video(
     )
     db.add(job)
     db.commit()
+
+    logger.info(f"[job_id={job_id}] Video queued: filename={filename}, camera_id={camera_id}")
 
     # Dispatch to background ThreadPoolExecutor without blocking request
     ingest_pool.submit(run_video_worker, job_id, saved_video_path, camera_id)
@@ -271,7 +236,7 @@ def stream_original_video(job_id: str, request: Request, db: Session = Depends(g
     if not job:
         raise HTTPException(status_code=404, detail="Ingest job not found")
 
-    upload_dir = os.path.join(os.getcwd(), "data", "uploads")
+    upload_dir = str(UPLOADS_DIR)
     # Search for job file with any extension
     target_path = None
     for ext in ALLOWED_EXTENSIONS:
@@ -279,6 +244,17 @@ def stream_original_video(job_id: str, request: Request, db: Session = Depends(g
         if os.path.exists(candidate):
             target_path = candidate
             break
+
+    if not target_path and job.filename:
+        candidates = [
+            str(SAMPLE_VIDEOS_DIR / job.filename),
+            os.path.join(os.getcwd(), "sample videos", job.filename),
+            os.path.join(os.getcwd(), "scratch", job.filename)
+        ]
+        for candidate in candidates:
+            if os.path.exists(candidate):
+                target_path = candidate
+                break
 
     if not target_path:
         raise HTTPException(status_code=404, detail="Original video file not found")
@@ -288,7 +264,7 @@ def stream_original_video(job_id: str, request: Request, db: Session = Depends(g
 @router.get("/jobs/{job_id}/annotated")
 def stream_annotated_video(job_id: str, request: Request, db: Session = Depends(get_db)):
     """Streams annotated MP4 with bounding boxes, HUD, and Range support."""
-    annotated_dir = os.path.join(os.getcwd(), "data", "uploads", "annotated")
+    annotated_dir = str(ANNOTATED_DIR)
     annotated_path = os.path.join(annotated_dir, f"{job_id}_annotated.mp4")
 
     if not os.path.exists(annotated_path):

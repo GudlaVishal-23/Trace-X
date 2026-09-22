@@ -1,0 +1,152 @@
+[
+  {
+    "video": "5009674-hd_1920_1080_25fps.mp4",
+    "city": "New Delhi (Connaught Place)",
+    "camera_id": "CAM_DL_01",
+    "road_id": "RD_CONNAUGHT_CIRCUS",
+    "plate": "DL9CAB5561",
+    "fused_plate": "DL9CAB5561",
+    "composite_conf": 1.0,
+    "status": "CONFIRMED",
+    "vehicle_type": "car",
+    "vehicle_make": "Maruti Suzuki",
+    "vehicle_model": "Alto",
+    "vehicle_color": "silver",
+    "speed_kmh": 42.5,
+    "image_quality": {
+      "overall_quality": 62.2,
+      "blur_score": 0.53,
+      "contrast_score": 0.48,
+      "brightness_mean": 89.7,
+      "resolution": [
+        115,
+        37
+      ],
+      "needs_enhancement": true
+    },
+    "vehicle_image_url": "/static/evidence/vehicle_DL9CAB5561.jpg",
+    "plate_image_url": "/static/evidence/plate_DL9CAB5561.jpg",
+    "enhanced_image_url": "/static/evidence/enhanced_DL9CAB5561.jpg",
+    "annotated_image_url": "/static/evidence/annotated_DL9CAB5561.jpg"
+  },
+  {
+    "video": "13020050_3840_2160_30fps.mp4",
+    "city": "Mumbai (Western Express Corridor)",
+    "camera_id": "CAM_MH_01",
+    "road_id": "RD_WESTERN_EXPRESS",
+    "plate": "MH08AP3746",
+    "fused_plate": "MH08AP3746",
+    "composite_conf": 0.98,
+    "status": "CONFIRMED",
+    "vehicle_type": "truck",
+    "vehicle_make": "Tata",
+    "vehicle_model": "Intra V30",
+    "vehicle_color": "white",
+    "speed_kmh": 0.0,
+    "image_quality": {
+      "overall_quality": 40.8,
+      "blur_score": 0.01,
+      "contrast_score": 0.09,
+      "brightness_mean": 139.9,
+      "resolution": [
+        192,
+        64
+      ],
+      "needs_enhancement": true
+    },
+    "vehicle_image_url": "/static/evidence/vehicle_MH08AP3746.jpg",
+    "plate_image_url": "/static/evidence/plate_MH08AP3746.jpg",
+    "enhanced_image_url": "/static/evidence/enhanced_MH08AP3746.jpg",
+    "annotated_image_url": "/static/evidence/annotated_MH08AP3746.jpg"
+  },
+  {
+    "video": "13926703_3840_2160_24fps.mp4",
+    "city": "Kolkata (Central Transit Circle)",
+    "camera_id": "CAM_WB_01",
+    "road_id": "RD_KOLKATA_MG_WAY",
+    "plate": "WB04G5786",
+    "fused_plate": "WB04G5786",
+    "composite_conf": 1.0,
+    "status": "CONFIRMED",
+    "vehicle_type": "auto_rickshaw",
+    "vehicle_make": "Bajaj",
+    "vehicle_model": "RE Compact",
+    "vehicle_color": "green",
+    "speed_kmh": 26.0,
+    "image_quality": {
+      "overall_quality": 59.5,
+      "blur_score": 0.04,
+      "contrast_score": 0.87,
+      "brightness_mean": 104.4,
+      "resolution": [
+        153,
+        86
+      ],
+      "needs_enhancement": true
+    },
+    "vehicle_image_url": "/static/evidence/vehicle_WB04G5786.jpg",
+    "plate_image_url": "/static/evidence/plate_WB04G5786.jpg",
+    "enhanced_image_url": "/static/evidence/enhanced_WB04G5786.jpg",
+    "annotated_image_url": "/static/evidence/annotated_WB04G5786.jpg"
+  },
+  {
+    "video": "14571138_3840_2160_60fps.mp4",
+    "city": "Bhopal (National Highway Flyover)",
+    "camera_id": "CAM_MP_01",
+    "road_id": "RD_BHOPAL_EXPRESS",
+    "plate": "MP04CY8591",
+    "fused_plate": "MP04CY8591",
+    "composite_conf": 1.0,
+    "status": "CONFIRMED",
+    "vehicle_type": "car",
+    "vehicle_make": "Maruti Suzuki",
+    "vehicle_model": "WagonR",
+    "vehicle_color": "white",
+    "speed_kmh": 54.0,
+    "image_quality": {
+      "overall_quality": 90.0,
+      "blur_score": 0.81,
+      "contrast_score": 1.0,
+      "brightness_mean": 106.1,
+      "resolution": [
+        115,
+        54
+      ],
+      "needs_enhancement": false
+    },
+    "vehicle_image_url": "/static/evidence/vehicle_MP04CY8591.jpg",
+    "plate_image_url": "/static/evidence/plate_MP04CY8591.jpg",
+    "enhanced_image_url": "/static/evidence/enhanced_MP04CY8591.jpg",
+    "annotated_image_url": "/static/evidence/annotated_MP04CY8591.jpg"
+  },
+  {
+    "video": "5614377-hd_1920_1080_25fps.mp4",
+    "city": "Hyderabad (Cyberabad Corridor)",
+    "camera_id": "CAM_HYD_02",
+    "road_id": "RD_HITEC_MAIN",
+    "plate": "TS09ZOMATO",
+    "fused_plate": "TS09ZOMATO",
+    "composite_conf": 1.0,
+    "status": "CONFIRMED",
+    "vehicle_type": "motorcycle",
+    "vehicle_make": "Hero",
+    "vehicle_model": "Splendor Plus",
+    "vehicle_color": "red",
+    "speed_kmh": 35.0,
+    "image_quality": {
+      "overall_quality": 56.7,
+      "blur_score": 0.09,
+      "contrast_score": 0.96,
+      "brightness_mean": 61.7,
+      "resolution": [
+        288,
+        108
+      ],
+      "needs_enhancement": true
+    },
+    "vehicle_image_url": "/static/evidence/vehicle_TS09ZOMATO.jpg",
+    "plate_image_url": "/static/evidence/plate_TS09ZOMATO.jpg",
+    "enhanced_image_url": "/static/evidence/enhanced_TS09ZOMATO.jpg",
+    "annotated_image_url": "/static/evidence/annotated_TS09ZOMATO.jpg"
+  }
+]

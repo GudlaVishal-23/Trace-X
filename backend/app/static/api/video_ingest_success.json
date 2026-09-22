@@ -1,0 +1,15 @@
+{
+  "status": "success",
+  "plate_text": "TS09AB1234",
+  "watchlist_hit": true,
+  "telemetry": {
+    "quality_score": 98.4,
+    "vehicle_class": "white_sedan",
+    "speed_estimate_kmh": 64.2
+  },
+  "alert": {
+    "plate_text": "TS09AB1234",
+    "camera_name": "CAM_DL_01 (Delhi Inner Ring)",
+    "priority": "CRITICAL"
+  }
+}

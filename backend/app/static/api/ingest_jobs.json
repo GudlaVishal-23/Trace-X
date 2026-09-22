@@ -1,0 +1,172 @@
+[
+  {
+    "job_id": "070d89bc-8e8f-453f-9680-1a0b8b2c50cc",
+    "filename": "Screen Recording 2026-09-21 184810.mp4",
+    "camera_id": "CAM_DL_01",
+    "status": "DONE",
+    "total_frames": 481,
+    "done_frames": 481,
+    "fps": 30.0,
+    "duration_s": 16.03,
+    "stats": {
+      "tracks": 46,
+      "plates_read": 893,
+      "alerts": 0,
+      "wall_s": 54.63,
+      "processing_fps": 2.2
+    }
+  },
+  {
+    "job_id": "394dbbe4-0dc2-4971-b03a-9edec478ba4c",
+    "filename": "5614377-hd_1920_1080_25fps.mp4",
+    "camera_id": "CAM_HYD_02",
+    "status": "DONE",
+    "total_frames": 174,
+    "done_frames": 174,
+    "fps": 25.0,
+    "duration_s": 6.96,
+    "stats": {
+      "tracks": 31,
+      "plates_read": 268,
+      "alerts": 0,
+      "wall_s": 9.02,
+      "processing_fps": 6.4
+    }
+  },
+  {
+    "job_id": "02ee8d26-3293-45b3-876c-2b6602cd1c06",
+    "filename": "14571138_3840_2160_60fps.mp4",
+    "camera_id": "CAM_MP_01",
+    "status": "DONE",
+    "total_frames": 600,
+    "done_frames": 600,
+    "fps": 60.0,
+    "duration_s": 10.0,
+    "stats": {
+      "tracks": 32,
+      "plates_read": 561,
+      "alerts": 0,
+      "wall_s": 13.59,
+      "processing_fps": 5.5
+    }
+  },
+  {
+    "job_id": "638b193e-ab79-455f-a986-44016f0a17c0",
+    "filename": "13926703_3840_2160_24fps.mp4",
+    "camera_id": "CAM_WB_01",
+    "status": "DONE",
+    "total_frames": 251,
+    "done_frames": 251,
+    "fps": 23.98,
+    "duration_s": 10.47,
+    "stats": {
+      "tracks": 27,
+      "plates_read": 535,
+      "alerts": 0,
+      "wall_s": 14.14,
+      "processing_fps": 5.9
+    }
+  },
+  {
+    "job_id": "4b15c471-da88-4bfe-9932-5a408b7097d9",
+    "filename": "13020050_3840_2160_30fps.mp4",
+    "camera_id": "CAM_MH_01",
+    "status": "DONE",
+    "total_frames": 476,
+    "done_frames": 476,
+    "fps": 30.0,
+    "duration_s": 15.87,
+    "stats": {
+      "tracks": 23,
+      "plates_read": 492,
+      "alerts": 0,
+      "wall_s": 69.79,
+      "processing_fps": 1.7
+    }
+  },
+  {
+    "job_id": "ca49852d-a4f7-4b87-a5f2-3c6bb097ce12",
+    "filename": "5009674-hd_1920_1080_25fps.mp4",
+    "camera_id": "CAM_DL_01",
+    "status": "DONE",
+    "total_frames": 525,
+    "done_frames": 525,
+    "fps": 25.0,
+    "duration_s": 21.0,
+    "stats": {
+      "tracks": 49,
+      "plates_read": 1479,
+      "alerts": 0,
+      "wall_s": 31.29,
+      "processing_fps": 5.6
+    }
+  },
+  {
+    "job_id": "35e57f59-13a9-42ab-b37d-ae555dac7f5c",
+    "filename": "5009674-hd_1920_1080_25fps.mp4",
+    "camera_id": "CAM_DL_01",
+    "status": "DONE",
+    "total_frames": 525,
+    "done_frames": 525,
+    "fps": 25.0,
+    "duration_s": 21.0,
+    "stats": {
+      "tracks": 49,
+      "plates_read": 1479,
+      "alerts": 0,
+      "wall_s": 103.01,
+      "processing_fps": 1.7
+    }
+  },
+  {
+    "job_id": "dd6dcc03-df90-4b37-a975-0cb55f047829",
+    "filename": "delhi_sample.mp4",
+    "camera_id": "CAM_DL_01",
+    "status": "DONE",
+    "total_frames": 75,
+    "done_frames": 75,
+    "fps": 25.0,
+    "duration_s": 3.0,
+    "stats": {
+      "tracks": 17,
+      "plates_read": 225,
+      "alerts": 0,
+      "wall_s": 6.92,
+      "processing_fps": 3.6
+    }
+  },
+  {
+    "job_id": "a9a39643-290c-4781-bbf6-bfb5d5fda709",
+    "filename": "5009674-hd_1920_1080_25fps.mp4",
+    "camera_id": "CAM_DL_01",
+    "status": "DONE",
+    "total_frames": 525,
+    "done_frames": 525,
+    "fps": 25.0,
+    "duration_s": 21.0,
+    "stats": {
+      "tracks": 49,
+      "plates_read": 1479,
+      "alerts": 0,
+      "wall_s": 128.06,
+      "processing_fps": 1.4
+    }
+  },
+  {
+    "job_id": "a620a531-e530-4bee-9ed2-131a3c727c98",
+    "filename": "Screen Recording 2026-09-21 184047.mp4",
+    "camera_id": "CAM_DL_01",
+    "status": "DONE",
+    "total_frames": 695,
+    "done_frames": 695,
+    "fps": 30.0,
+    "duration_s": 23.17,
+    "stats": {
+      "tracks": 50,
+      "plates_read": 967,
+      "alerts": 0,
+      "wall_s": 96.5,
+      "processing_fps": 1.8
+    }
+  }
+]

@@ -3,6 +3,7 @@ import time
 import json
 import uuid
 import logging
+import shutil
 import subprocess
 from datetime import datetime, timezone, timedelta
 from typing import Dict, List, Tuple, Any, Optional
@@ -13,10 +14,11 @@ import numpy as np
 from backend.app.database import SessionLocal
 from backend.app.models import IngestJob, JobDetection, JobTrack, VehicleEvent, Watchlist, Alert, Camera
 from backend.app.services.anpr import assess_image_quality, enhance_plate_crop, fuse_multiframe_reads
+from backend.app.config import CROPS_DIR, ANNOTATED_DIR, JOB_TIMEOUT_SECONDS, DEMO_MODE, TARGET_PROCESS_FPS, YOLO_WEIGHTS_PATH
 
 logger = logging.getLogger("tracex.ingest")
 
-TARGET_FPS = 8
+TARGET_FPS = TARGET_PROCESS_FPS
 
 # In-memory replay buffer for WebSocket clients (Section 1.4: deque maxlen 2000 per job)
 JOB_EVENT_BUFFERS: Dict[str, deque] = {}
@@ -28,8 +30,16 @@ def get_event_buffer(job_id: str) -> deque:
         JOB_EVENT_BUFFERS[job_id] = deque(maxlen=2000)
     return JOB_EVENT_BUFFERS[job_id]
 
+async def _send_ws_with_timeout(ws: Any, message: str, job_id: str):
+    """Sends WS message with a 2-second timeout to avoid stalling backend processing."""
+    import asyncio
+    try:
+        await asyncio.wait_for(ws.send_text(message), timeout=2.0)
+    except Exception as e:
+        logger.debug(f"[job_id={job_id}] Dropped slow/disconnected WS subscriber: {e}")
+
 def emit_event(job_id: str, event_data: Dict[str, Any]):
-    """Stores event in replay buffer and notifies connected WebSocket subscribers."""
+    """Stores event in replay buffer and notifies connected WebSocket subscribers with timeout guard."""
     buf = get_event_buffer(job_id)
     buf.append(event_data)
     
@@ -48,9 +58,9 @@ def emit_event(job_id: str, event_data: Dict[str, Any]):
         if loop and loop.is_running():
             for ws in list(subs):
                 try:
-                    asyncio.run_coroutine_threadsafe(ws.send_text(message), loop)
+                    asyncio.run_coroutine_threadsafe(_send_ws_with_timeout(ws, message, job_id), loop)
                 except Exception as e:
-                    logger.debug(f"Failed to send to WebSocket subscriber: {e}")
+                    logger.debug(f"[job_id={job_id}] Failed to dispatch WS event: {e}")
 
 def dominant_color_hsv(crop: np.ndarray) -> str:
     """Extracts dominant vehicle color from BGR crop using HSV quantization."""
@@ -183,6 +193,7 @@ def run_video_worker(job_id: str, video_path: str, camera_id: str):
         return
 
     try:
+        logger.info(f"[job_id={job_id}] Ingestion pipeline started on {video_path} (camera={camera_id})")
         job.status = "PROBING"
         job.started_at = datetime.now(timezone.utc).isoformat()
         db.commit()
@@ -205,8 +216,10 @@ def run_video_worker(job_id: str, video_path: str, camera_id: str):
         job.duration_s = duration_s
         db.commit()
 
-        # Step stride: target 8 processed frames per video second
-        stride = max(1, round(fps / TARGET_FPS))
+        logger.info(f"[job_id={job_id}] Video probed: {width}x{height}, {fps}fps, {total_frames} frames, {duration_s}s")
+
+        # Step stride: target TARGET_FPS processed frames per video second (or faster in DEMO_MODE)
+        stride = max(1, round(fps / TARGET_FPS)) if not DEMO_MODE else max(2, round(fps / 2))
 
         # Setup tracker: Try ByteTrack from supervision; fallback to SimpleIoUTracker
         tracker = None
@@ -222,9 +235,10 @@ def run_video_worker(job_id: str, video_path: str, camera_id: str):
         yolo_model = None
         try:
             from ultralytics import YOLO
-            yolo_model = YOLO("yolov8n.pt")
-        except Exception:
-            logger.info("YOLOv8 not directly initialized; utilizing OpenCV edge perception heuristics")
+            weights_file = str(YOLO_WEIGHTS_PATH) if YOLO_WEIGHTS_PATH.exists() else "yolov8n.pt"
+            yolo_model = YOLO(weights_file)
+        except Exception as e:
+            logger.info(f"[job_id={job_id}] YOLOv8 load fallback: {e}; using edge motion perception heuristics")
 
         # Load active watchlist for instant hotlist matching
         active_watchlist = db.query(Watchlist).filter(Watchlist.status == "ACTIVE").all()
@@ -233,9 +247,9 @@ def run_video_worker(job_id: str, video_path: str, camera_id: str):
             for w in active_watchlist
         }
 
-        # Artifact directories
-        crops_dir = os.path.join(os.getcwd(), "data", "uploads", "crops")
-        annotated_dir = os.path.join(os.getcwd(), "data", "uploads", "annotated")
+        # Artifact directories from config
+        crops_dir = str(CROPS_DIR)
+        annotated_dir = str(ANNOTATED_DIR)
         os.makedirs(crops_dir, exist_ok=True)
         os.makedirs(annotated_dir, exist_ok=True)
 
@@ -259,6 +273,10 @@ def run_video_worker(job_id: str, video_path: str, camera_id: str):
         bg_sub = cv2.createBackgroundSubtractorMOG2(history=300, varThreshold=25, detectShadows=True)
 
         while True:
+            # Per-job wall-clock timeout guard (Part D.6)
+            if time.time() - start_time > JOB_TIMEOUT_SECONDS:
+                raise TimeoutError(f"Job processing exceeded maximum allowed wall-clock timeout of {JOB_TIMEOUT_SECONDS}s")
+
             ret, frame = cap.read()
             if not ret:
                 break
@@ -534,16 +552,28 @@ def run_video_worker(job_id: str, video_path: str, camera_id: str):
         cap.release()
         out_writer.release()
 
-        # Re-encode raw MP4 to web-compatible H.264 using ffmpeg (Section 1.3)
-        try:
-            cmd = ["ffmpeg", "-y", "-i", raw_annotated_path, "-c:v", "libx264", "-pix_fmt", "yuv420p", "-movflags", "+faststart", final_annotated_path]
-            subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, check=True)
-            if os.path.exists(raw_annotated_path):
-                os.remove(raw_annotated_path)
-        except Exception as e:
-            logger.warning(f"FFmpeg re-encoding fallback; using raw output: {e}")
+        # Re-encode raw MP4 to web-compatible H.264 using ffmpeg (Part B.5)
+        ffmpeg_bin = shutil.which("ffmpeg")
+        if not ffmpeg_bin:
+            logger.error(f"[job_id={job_id}] CRITICAL: ffmpeg executable not found on PATH. Annotated video might not play inline in Chrome.")
             if os.path.exists(raw_annotated_path):
                 os.rename(raw_annotated_path, final_annotated_path)
+        else:
+            try:
+                subprocess.run([
+                    "ffmpeg", "-y", "-i", raw_annotated_path,
+                    "-c:v", "libx264", "-preset", "veryfast", "-pix_fmt", "yuv420p",
+                    "-movflags", "+faststart",
+                    final_annotated_path
+                ], check=True, capture_output=True)
+                if os.path.exists(raw_annotated_path):
+                    os.remove(raw_annotated_path)
+                logger.info(f"[job_id={job_id}] Successfully re-encoded annotated MP4 to H.264 baseline faststart")
+            except subprocess.CalledProcessError as e:
+                err_msg = e.stderr.decode("utf-8", errors="ignore") if e.stderr else str(e)
+                logger.error(f"[job_id={job_id}] ffmpeg re-encode failed: {err_msg}")
+                if os.path.exists(raw_annotated_path):
+                    os.rename(raw_annotated_path, final_annotated_path)
 
         # Multi-Frame Bayesian Voting & Track Aggregation (Section 1.4 & Section 2.4)
         tracks_to_insert: List[JobTrack] = []

@@ -2,16 +2,16 @@
 
 <div align="center">
 
-![TRACE-X Banner](https://img.shields.io/badge/TRACE--X-SIH26127-F59E0B?style=for-the-badge&logo=shield&logoColor=white)
-![Status](https://img.shields.io/badge/STATUS-PRODUCTION--READY%20PROTOTYPE-10B981?style=for-the-badge)
+![TRACE-X Banner](https://img.shields.io/badge/TRACE--X-SIH26127-FF6D00?style=for-the-badge&logo=shield&logoColor=white)
+![Status](https://img.shields.io/badge/STATUS-PRODUCTION--READY%20PROTOTYPE-00E475?style=for-the-badge)
 ![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
-![YOLOv8](https://img.shields.io/badge/YOLOv8-ByteTrack-3B82F6?style=for-the-badge&logo=opencv&logoColor=white)
+![PostGIS](https://img.shields.io/badge/PostGIS-336791?style=for-the-badge&logo=postgresql&logoColor=white)
 ![Leaflet](https://img.shields.io/badge/Leaflet-199900?style=for-the-badge&logo=leaflet&logoColor=white)
 ![Python 3.10+](https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge&logo=python&logoColor=white)
 
-**An enterprise-grade, spatiotemporal multi-camera ANPR tracking and macro urban traffic analytics platform built for Smart India Hackathon 2026 (Problem Statement: SIH26127).**
+**An enterprise-grade, spatiotemporal multi-camera ANPR tracking and macro traffic analytics platform built for Smart India Hackathon 2026 (Problem Statement: SIH26127).**
 
-[Live Command Center](http://127.0.0.1:8000) • [Live Scan Theatre](http://127.0.0.1:8000/scan) • [Swagger API Docs](http://127.0.0.1:8000/docs) • [System Specifications](./docs/) • [Changelog](./CHANGELOG.md)
+[Live Dashboard](http://127.0.0.1:8000) • [Swagger API Docs](http://127.0.0.1:8000/docs) • [System Specifications](./docs/) • [Changelog](./CHANGELOG.md)
 
 </div>
 
@@ -21,9 +21,9 @@
 
 **TRACE-X** transforms disparate, city-wide CCTV and ANPR camera feeds into structured, actionable, and legally defensible vehicle intelligence. Designed specifically to resolve urban security blind spots and multi-camera handover gaps, TRACE-X delivers:
 
-1. **Live Frame-by-Frame Video Ingestion & Perception (Scan Theatre)**: Evaluator uploads traffic feeds or selects presets to observe real-time bounding boxes, live Indian High Security Registration Plate (HSRP) detection, ByteTrack vehicle tracking, and Bayesian multi-frame consensus.
+1. **High-Accuracy ANPR/OCR Ingestion**: Resilient edge-detection for real-world Indian road conditions (blur, low light, heavy rainfall, high-angle skews, dirt/obstruction, and standard/non-standard HSRP plates).
 2. **Single-Plate Spatiotemporal Trajectory Solver**: Graph-based journey reconstruction that correlates vehicle observations across distributed cameras, enforces physical feasibility guards ($v \le 160\text{ km/h}$), bridges blind camera zones, and classifies confidence into `CONFIRMED`, `PROBABLE`, and `CAMERA_GAP`.
-3. **Macro Urban Traffic Analytics & GIS Heatmaps**: Real-time arterial flow analysis, spatial density heatmaps across key urban junctions, corridor transit velocities, Deep CNN vehicle modal distribution (2-wheelers, cars, commercial, autos), and Origin-Destination (OD) commute matrices.
+3. **Macro Urban Traffic Analytics & GIS Heatmaps**: Real-time arterial flow analysis, spatial density heatmaps, corridor transit velocities, Deep CNN vehicle modal distribution (2-wheelers, cars, commercial, autos), and Origin-Destination (OD) commute matrices.
 4. **Active Intercept & Watchlist Dispatch**: Real-time stolen vehicle alerts, geofence violations, automated PCR patrol unit dispatch, and cryptographic SHA-256 forensic dossier generation.
 
 ```
@@ -44,16 +44,16 @@
  ┌─────────────────────────────────────────────────────────────────────────────────────────┐
  │                                EDGE / INGESTION LAYER                                    │
  │  RTSP Feeds / Pre-recorded Streams ──> OpenCV Frame Grabber ──> YOLOv8 Vehicle & Plate  │
- │  CLAHE Contrast Enhancement ──> ByteTrack Multi-Object Tracking ──> Bayesian Consensus   │
+ │  PaddleOCR / CRNN Text Recognition ──> OSNet Re-ID Embeddings (512-d)                   │
  └───────────────────────────────────────────┬─────────────────────────────────────────────┘
-                                             │ JSON Event Payloads / WebSocket Stream
+                                             │ JSON Event Payloads
                                              ▼
  ┌─────────────────────────────────────────────────────────────────────────────────────────┐
  │                                BACKEND & ANALYTICS CORE                                  │
  │  ┌────────────────────────────────────────────────────────────────────────────────────┐ │
  │  │ FastAPI Asynchronous REST Engine (Python 3.10+)                                    │ │
  │  │  • /api/cameras     • /api/events      • /api/vehicles/{plate}/trajectory          │ │
- │  │  • /api/traffic     • /api/alerts      • /api/ingest/upload & /ws/ingest           │ │
+ │  │  • /api/traffic     • /api/alerts      • /api/traffic/heatmap                      │ │
  │  └──────────────────────────────────┬─────────────────────────────────────────────────┘ │
  │                                     ▼                                                   │
  │  ┌───────────────────────────┐  ┌───────────────────────────┐  ┌──────────────────────┐ │
@@ -68,11 +68,11 @@
                       ┌──────────────────────┴──────────────────────┐
                       ▼                                             ▼
  ┌──────────────────────────────────────────┐  ┌──────────────────────────────────────────┐
- │         DATA & PERSISTENCE LAYER         │  │         COMMAND CENTER & THEATRE         │
- │  • PostgreSQL 16 + PostGIS Spatial DB    │  │  • Clean Modern SaaS Interface (v5.0)    │
- │  • SQLite Spatial Fallback Engine        │  │  • Warm Slate + Amber/Emerald Accents    │
- │  • Ingest Jobs, Detections, & Tracks     │  │  • 64px Icon Rail + Leaflet GIS Canvas   │
- │  • Local Metadata & Snapshot Store       │  │  • Live Scan Theatre with Canvas HUD     │
+ │         DATA & PERSISTENCE LAYER         │  │         TACTICAL COMMAND CENTER          │
+ │  • PostgreSQL 16 + PostGIS Spatial DB    │  │  • Stitch AI-Inspired Dark HUD Console   │
+ │  • SQLite Spatial Fallback Engine        │  │  • Traffic Signal Theme (Orange/White/Grn│
+ │  • Redis 7 In-Memory Hot Cache           │  │  • Daylight Leaflet Basemap Switcher     │
+ │  • Local Metadata & Snapshot Store       │  │  • Authentic Indian HSRP Plate Renderer  │
  └──────────────────────────────────────────┘  └──────────────────────────────────────────┘
 ```
 
@@ -82,26 +82,25 @@
 
 | Module | Features & Capabilities | Status |
 | :--- | :--- | :--- |
-| **Live Scan Theatre (`/scan`)** | Frame-by-frame video ingestion, YOLOv8 vehicle/plate bounding boxes, ByteTrack tracking, aspect-ratio letterbox compensation, live WebSocket streaming, and Bayesian consensus fusion drawer. | ✅ Production |
-| **Live GIS Map** | Real-time Leaflet GIS canvas, strategic city camera nodes, live detection stream, Daylight Basemap Switcher (`Daylight OSM`, `Carto Voyager`, `World Street`). | ✅ Production |
+| **Live City Map** | Real-time Leaflet GIS canvas, 8 strategic Hyderabad cameras, pulsing radar halos, live detection stream (12+ events/sec), Daylight Basemap Switcher (`Daylight OSM`, `Carto Voyager`, `World Street`). | ✅ Production |
 | **Trajectory Tracking** | Spatiotemporal graph solver, physical velocity guard ($v \le 160\text{ km/h}$), camera gap interpolation, corridor polylines, 4 KPI metric cards, confidence scoring (`CONFIRMED`, `PROBABLE`, `CAMERA_GAP`). | ✅ Production |
-| **Authentic HSRP Plate Badges** | Dual-layer Indian High Security Registration Plate rendering with blue `IND` wedge, Ashoka Chakra emblem, and yellow (commercial) / white (private) variants. | ✅ Production |
-| **Traffic Analytics** | Macro KPIs (Vehicles Today, City Speed, Active Bottlenecks), peak commute indicators, CNN modal split distribution, Origin-Destination (OD) flow matrix. | ✅ Production |
+| **HSRP Generator** | Authentic Indian High Security Registration Plate rendering with blue `IND` wedge, Ashoka Chakra emblem, and yellow (commercial) / white (private) variants. | ✅ Production |
+| **Traffic Analytics** | Macro KPIs (248,910+ vehicles, 34.8 km/h city avg), Peak commute indicator, CNN modal split distribution, Origin-Destination (OD) flow matrix. | ✅ Production |
 | **Congestion Heatmap**| Real-time spatial traffic heatmap, 11 monitored junctions, 5 arterial corridor polylines colored by speed, interactive hotspot zoom (`Begumpet`, `Gachibowli`, `Secunderabad`, `PVNR Expressway`). | ✅ Production |
-| **Watchlist & Alerts** | Real-time alert cards with CLAHE OCR plate crops, CCTV evidence lightbox, stolen vehicle hotlist table, and 1-click PCR Patrol Intercept dispatch system. | ✅ Production |
+| **Watchlist & Alerts** | Real-time alert cards, stolen vehicle hotlist table, suspect registration modal, and 1-click PCR Patrol Intercept dispatch system. | ✅ Production |
 | **Forensic Dossier** | Chain-of-custody intelligence brief export with cryptographic SHA-256 verification hash for court-admissible evidence. | ✅ Production |
 
 ---
 
 ## 🎨 4. Design System & Theming
 
-The interface adopts a **Soft, Clean, Premium Modern SaaS Architecture (v5.0)**:
+Designed in accordance with the **Stitch AI Master Prompt** and the official **Traffic Signal / Indian Tricolor Palette**:
 
-- **Warm Slate Background (`#0F172A` / `#1E293B`)**: Layered surfaces designed to prevent eye fatigue during prolonged monitoring.
-- **Warm Amber Accent (`#F59E0B`)**: High-contrast, non-aggressive primary accent for active navigation, highlighted plates, and key actions.
-- **Emerald Success (`#10B981`)**: Trajectory confirmations, optimal speeds, and online node indicators.
-- **Compact 64px Icon Rail**: Replaces bulky 256px sidebars to maximize GIS map and analytics real estate.
-- **Modern Typography**: Clean `Inter` font for UI hierarchy with `JetBrains Mono` reserved for telemetry and HSRP registration plates.
+- **Signal Orange (`#FF6D00`)**: Primary accents, active navigation tabs, radar warning halos, critical alerts, and congested corridors ($<20\text{ km/h}$).
+- **Signal Emerald Green (`#00E475`)**: Confirmed trajectory links, optimal traffic flow ($>40\text{ km/h}$), verified consensus badges, and online nodes.
+- **Pure White (`#FFFFFF`)**: High-contrast typography, reflective camera marker cores, and private vehicle HSRP plates.
+- **Obsidian Slate (`#080C16`, `#0F131D`)**: Ultra-deep, military-grade tactical command console shell.
+- **Daylight Street Basemap**: Clean, daytime cartography powered by **OpenStreetMap** with zero watermarks and clear road hierarchies.
 
 ---
 
@@ -110,50 +109,55 @@ The interface adopts a **Soft, Clean, Premium Modern SaaS Architecture (v5.0)**:
 ### Prerequisites
 - Python 3.10 or higher
 - Git
-- Modern web browser (Chrome, Edge, Firefox)
+- Web browser (Chrome, Edge, Firefox)
+- *(Optional)* Docker & Docker Compose
 
-### Step 1: Clone Repository
+### Step 1: Clone Repository & Create Virtual Environment
 ```bash
-git clone https://github.com/GudlaVishal-23/Trace-X.git
-cd Trace-X
-```
+git clone https://github.com/your-org/neura-track.git
+cd "Neura Track"
 
-### Step 2: Create & Activate Virtual Environment
-```bash
-# Windows:
+# Create virtual environment
 python -m venv venv
-.\venv\Scripts\activate
 
+# Activate virtual environment
+# Windows:
+.\venv\Scripts\activate
 # Linux/macOS:
-python3 -m venv venv
 source venv/bin/activate
 ```
 
-### Step 3: Install Dependencies
+### Step 2: Install Dependencies
 ```bash
-pip install -r requirements.txt
-# Or core packages:
-pip install fastapi uvicorn pydantic sqlalchemy httpx pillow opencv-python ultralytics supervision
+pip install fastapi uvicorn pydantic sqlalchemy sqlite3 httpx pillow opencv-python
+```
+
+### Step 3: Configure Environment
+Copy the configuration template:
+```bash
+cp .env.example .env
 ```
 
 ### Step 4: Run Application
+Start the high-performance Uvicorn server:
 ```bash
-python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000
+python -m uvicorn backend.app.main:app --host 127.0.0.1 --port 8000 --reload
 ```
 
-### Step 5: Access Web Interfaces
-- **Command Center Dashboard:** [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
-- **Live Scan Theatre:** [http://127.0.0.1:8000/scan](http://127.0.0.1:8000/scan)
+### Step 5: Access Web Command Center
+Open your browser and navigate to:
+- **Command Dashboard:** [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
 - **Interactive OpenAPI Documentation:** [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs)
+- **Alternative Redoc API Documentation:** [http://127.0.0.1:8000/redoc](http://127.0.0.1:8000/redoc)
 
 ---
 
-## 🧪 6. Testing & Quality Assurance
+## 🧪 6. Testing & Simulation
 
-### Automated Tests
-Run the comprehensive integration and perception test suite:
+### Running Automated Integration Tests
+Execute the comprehensive test suite validating all API endpoints, trajectory graph solvers, and traffic aggregations:
 ```bash
-python -m pytest backend/tests/test_api.py backend/tests/test_phase1_ingest.py -v
+pytest backend/tests/test_api.py -v
 ```
 
 ### Running the Synthetic ANPR Pipeline Simulator
@@ -168,17 +172,16 @@ python scripts/simulate_pipeline.py
 
 | Endpoint | Method | Description |
 | :--- | :---: | :--- |
-| `/api/ingest/upload` | `POST` | Upload video for live perception processing ($\le 500\text{ MB}$). |
-| `/api/ingest/jobs` | `GET` | List all video ingestion jobs with progress telemetry. |
-| `/api/ingest/jobs/{id}/tracks` | `GET` | Retrieve Bayesian consensus tracks and plate reads for a job. |
-| `/ws/ingest/{job_id}` | `WebSocket` | Real-time live frame detection stream with bounding boxes. |
 | `/api/cameras` | `GET` | Returns all operational camera nodes with coordinates, status, and telemetry. |
+| `/api/cameras/{id}` | `GET` | Telemetry details and uptime stats for a single camera node. |
 | `/api/events` | `GET` | Real-time vehicle detection event stream (supports plate & node filters). |
+| `/api/events` | `POST` | Ingests a new vehicle detection event from an edge ANPR camera. |
 | `/api/vehicles/{plate}/trajectory` | `GET` | Reconstructs spatiotemporal journey with speed validation and gap bridging. |
 | `/api/traffic/kpis` | `GET` | City-wide macro KPIs, vehicle modal distribution, and hourly volume trends. |
 | `/api/traffic/heatmap` | `GET` | Spatial traffic density points (11 junctions) and arterial corridor speeds. |
 | `/api/traffic/od` | `GET` | Origin-Destination movement matrix between key urban zones. |
 | `/api/alerts` | `GET` | Active security notifications and blacklisted vehicle sightings. |
+| `/api/alerts/watchlist` | `GET` | List of target vehicles registered on the active police hotlist. |
 | `/api/alerts/watchlist` | `POST` | Register a new high-interest target plate with priority and notes. |
 
 ---
@@ -186,8 +189,9 @@ python scripts/simulate_pipeline.py
 ## 📁 8. Project Directory Structure
 
 ```
-Trace-X/
-├── .agents/                        # Agent workflows and TRACE-X domain skills
+c:\Neura Track/
+├── .agents/                        # Agent workflows and domain intelligence skills
+│   └── skills/trace-x-engine/      # TRACE-X domain skill (ANPR, trajectory, traffic)
 ├── backend/                        # Backend Application Package
 │   ├── app/
 │   │   ├── api/                    # Modular FastAPI Route Handlers
@@ -195,31 +199,34 @@ Trace-X/
 │   │   │   ├── cameras.py          # Camera metadata and status routes
 │   │   │   ├── events.py           # Ingestion and event query routes
 │   │   │   ├── traffic.py          # Macro analytics, heatmap, OD routes
-│   │   │   ├── vehicles.py         # Trajectory search and dossier routes
-│   │   │   └── videos.py           # Sample video catalog and presets
-│   │   ├── ingest/                 # Video Perception & Ingestion Engine
-│   │   │   └── video_worker.py     # YOLOv8, ByteTrack, CLAHE, & Bayesian voting
+│   │   │   └── vehicles.py         # Trajectory search and dossier routes
 │   │   ├── services/               # Core Algorithmic Business Logic
-│   │   │   ├── trajectory.py       # Spatiotemporal graph solver & speed guard
+│   │   │   ├── trajectory.py       # Spatiotemporal graph solver & physical speed guard
 │   │   │   └── traffic.py          # Heatmap generation and corridor flow calculator
-│   │   ├── static/                 # Modern Clean SaaS Web UI
-│   │   │   ├── index.html          # Command Center dashboard (64px rail, Leaflet GIS)
-│   │   │   ├── scan.html           # Live Scan Theatre (letterbox canvas HUD, WebSocket)
-│   │   │   ├── style.css           # Clean Design System v5.0 (Warm Slate, Amber, Emerald)
-│   │   │   └── app.js              # GIS map controller, real-time polling, timeline renderer
+│   │   ├── static/                 # Tactical Command Center Web UI
+│   │   │   ├── index.html          # 4-workspace tactical command center console
+│   │   │   ├── style.css           # Traffic signal design system (#FF6D00, #00E475, #080C16)
+│   │   │   └── app.js              # Leaflet GIS controller, basemap switcher, real-time polling
 │   │   ├── database.py             # Database engine (PostGIS / SQLite fallback)
-│   │   ├── models.py               # SQLAlchemy ORM models (Jobs, Detections, Tracks)
+│   │   ├── models.py               # SQLAlchemy ORM models
 │   │   ├── schemas.py              # Pydantic validation schemas
 │   │   └── main.py                 # FastAPI application root & seed data runner
 │   └── tests/
-│       ├── test_api.py             # Automated API unit & integration tests
-│       └── test_phase1_ingest.py   # End-to-end video ingestion & tracking tests
-├── data/                           # Data directory (SQLite db, uploads, seed topology)
-├── docs/                           # Architectural Documentation & PRDs
-├── sample videos/                  # Sample 4K/1080p traffic clips for demo
-├── scripts/                        # Calibration and simulation scripts
+│       └── test_api.py             # Automated unit & integration tests
+├── docs/                           # Engineering Specifications & Architectural Documentation
+│   ├── prd.md                      # Product Requirements Document & Non-Functional SLOs
+│   ├── ai_models_and_pipeline.md   # Computer Vision, OCR, and Re-ID specifications
+│   ├── tech_stack.md               # Technology choices and justification
+│   ├── architecture.md             # System architecture & distributed data pipeline
+│   ├── database_schema.md          # PostGIS schema definitions and spatial indexing
+│   ├── api_specification.md        # Comprehensive OpenAPI/Swagger specification
+│   ├── testing_and_evaluation.md   # Testing protocols and evaluation benchmarks
+│   └── stitch_ui_master_prompt.md  # Master prompt specification for Google Stitch AI
+├── scripts/
+│   └── simulate_pipeline.py        # Synthetic multi-camera ANPR event simulator
+├── .env.example                    # Environment variable configuration template
 ├── AGENTS.md                       # Workspace memory & permanent instructions
-├── CHANGELOG.md                    # Chronological record of all engineering changes
+├── CHANGELOG.md                    # Immutable chronological record of all engineering changes
 ├── docker-compose.yml              # Production Docker stack (FastAPI, PostGIS, Redis)
 └── README.md                       # Master project documentation
 ```
@@ -228,7 +235,7 @@ Trace-X/
 
 ## ⚖️ 9. Domain Constraints & Legal Compliance
 
-1. **Zero Continuous Video Duplication**: Feeds are processed transiently; only structured `VehicleEvent` records with cryptographic hashes are persisted.
+1. **Zero Continuous Video Duplication**: Video feeds are processed strictly at the edge or transiently in memory; only lightweight, structured JSON events with cryptographic hashes are persisted.
 2. **Physical Velocity Limit Enforcement**: Any multi-camera trajectory edge implying a speed exceeding $160\text{ km/h}$ is automatically pruned to eliminate false positive plate correlations.
 3. **Multi-Camera Consensus**: High-confidence alerts require verification across multiple cameras or human-in-the-loop analyst confirmation.
 4. **Data Privacy by Design**: All vehicle metadata adheres to role-based access control (RBAC), automated record expiration policies, and SHA-256 chain-of-custody logging.

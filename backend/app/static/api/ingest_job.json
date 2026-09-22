@@ -1,0 +1,17 @@
+{
+  "job_id": "0e389151-760d-4334-a51c-1163796d84ac",
+  "filename": "5009674-hd_1920_1080_25fps.mp4",
+  "camera_id": "CAM_DL_01",
+  "status": "DONE",
+  "total_frames": 525,
+  "done_frames": 525,
+  "fps": 25.0,
+  "duration_s": 21.0,
+  "stats": {
+    "tracks": 49,
+    "plates_read": 1479,
+    "alerts": 0,
+    "wall_s": 39.98,
+    "processing_fps": 4.4
+  }
+}

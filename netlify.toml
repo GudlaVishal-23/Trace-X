@@ -1,35 +1,52 @@
-# Netlify Configuration for TRACE-X Production Deployment
+# =====================================================================
+# TRACE-X (SIH26127) Netlify Production Deployment Configuration
+# =====================================================================
+
 [build]
   publish = "backend/app/static"
   command = ""
 
+# Security and performance headers
 [[headers]]
   for = "/*"
   [headers.values]
     Access-Control-Allow-Origin = "*"
+    Access-Control-Allow-Headers = "Origin, X-Requested-With, Content-Type, Accept, Authorization, Range"
+    Access-Control-Allow-Methods = "GET, POST, OPTIONS, PUT, DELETE"
     X-Frame-Options = "SAMEORIGIN"
     X-Content-Type-Options = "nosniff"
 
+# Optimized streaming headers for traffic video assets
 [[headers]]
   for = "/sample_videos/*"
   [headers.values]
     Content-Type = "video/mp4"
     Accept-Ranges = "bytes"
     Access-Control-Allow-Origin = "*"
+    Cache-Control = "public, max-age=604800, immutable"
 
-# Route /static/ assets directly to root static folder
+[[headers]]
+  for = "/evidence/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, immutable"
+
+[[headers]]
+  for = "/static/evidence/*"
+  [headers.values]
+    Cache-Control = "public, max-age=604800, immutable"
+
+# Static and page routing
 [[redirects]]
   from = "/static/*"
   to = "/:splat"
   status = 200
 
-# Route /scan to scan.html
 [[redirects]]
   from = "/scan"
   to = "/scan.html"
   status = 200
 
-# Route /api/ to static JSON fallback responses on Netlify
+# REST API Fallbacks for Netlify Static CDN
 [[redirects]]
   from = "/api/cameras"
   to = "/api/cameras.json"
@@ -71,15 +88,11 @@
   status = 200
 
 [[redirects]]
-  from = "/api/videos/*/ingest"
-  to = "/api/events.json"
-  status = 200
-
-[[redirects]]
   from = "/api/videos"
   to = "/api/videos.json"
   status = 200
 
+# Trajectory lookups
 [[redirects]]
   from = "/api/vehicles/TS09AB1234/trajectory"
   to = "/api/trajectory_TS09AB1234.json"
@@ -100,8 +113,65 @@
   to = "/api/trajectory_TS09AB1234.json"
   status = 200
 
+[[redirects]]
+  from = "/api/reports/vehicle/*"
+  to = "/api/report_TS09AB1234.json"
+  status = 200
+
+# Ingest Scan Theatre API endpoints for Netlify
+[[redirects]]
+  from = "/api/ingest/jobs/*/detections"
+  to = "/api/ingest_detections.json"
+  status = 200
+
+[[redirects]]
+  from = "/api/ingest/jobs/*/tracks"
+  to = "/api/ingest_tracks.json"
+  status = 200
+
+[[redirects]]
+  from = "/api/ingest/jobs/*/video"
+  to = "/sample_videos/5009674-hd_1920_1080_25fps.mp4"
+  status = 200
+
+[[redirects]]
+  from = "/api/ingest/jobs/*/annotated"
+  to = "/sample_videos/5009674-hd_1920_1080_25fps.mp4"
+  status = 200
+
+[[redirects]]
+  from = "/api/ingest/jobs/*"
+  to = "/api/ingest_job.json"
+  status = 200
+
+[[redirects]]
+  from = "/api/ingest/jobs"
+  to = "/api/ingest_jobs.json"
+  status = 200
+
+[[redirects]]
+  from = "/api/ingest/upload"
+  to = "/api/ingest_job.json"
+  status = 200
+
+[[redirects]]
+  from = "/api/videos/*/ingest"
+  to = "/api/video_ingest_success.json"
+  status = 200
+
+[[redirects]]
+  from = "/api/alerts/*/acknowledge"
+  to = "/api/ack_success.json"
+  status = 200
+
 # Fallback for all other /api routes
 [[redirects]]
   from = "/api/*"
   to = "/api/events.json"
+  status = 200
+
+# SPA fallback
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
   status = 200

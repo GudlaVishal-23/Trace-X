@@ -1,76 +1,38 @@
-# Byte-compiled / optimized / DLL files
+# Python
 __pycache__/
 *.py[cod]
 *$py.class
-
-# Virtual Environments
+*.so
+.Python
+env/
 venv/
 .venv/
-ENV/
-env/
 
-# IDE & Editor files
-.vscode/
-.idea/
-.netlify/
-*.swp
-*.swo
-*~
-.DS_Store
+# Environment variables & secrets (Part D.3)
+.env
+.env.local
+.env.*.local
 
-# Agent Workspace Memory & Internal Rules (Local only)
-AGENTS.md
-.agents/
-.kilo/
-
-# Testing & Cache
+# Pytest & Testing
 .pytest_cache/
 .coverage
 htmlcov/
-.tox/
-.nox/
 
-# Temporary & Scratch files
-scratch/
-
-# Database files (Created & seeded automatically on startup)
-*.db
-*.sqlite
-*.sqlite3
+# Local databases & uploaded artifacts
 data/*.db
-data/*.sqlite
-data/*.sqlite3
-
-# Large Binary Model Weights (Downloaded automatically on first use)
-*.pt
-*.onnx
-*.weights
-
-# Test Video Feeds (Preserved for Evaluator Testing & Static Deployment)
-sample videos/*.avi
-sample videos/*.mov
-sample videos/*.mkv
-!sample videos/*.mp4
-sample videos/*Screen Recording*.mp4
-data/sample/*Screen Recording*.mp4
-!sample videos/.gitkeep
-!backend/app/static/sample_videos/*.mp4
-
-# Ingest Uploads (Keep directory structures via .gitkeep)
+data/uploads/crops/*
+!data/uploads/crops/.gitkeep
+data/uploads/annotated/*
+!data/uploads/annotated/.gitkeep
 data/uploads/*.mp4
 data/uploads/*.avi
 data/uploads/*.mov
 data/uploads/*.mkv
-data/uploads/annotated/*.mp4
-data/uploads/crops/*
-!data/uploads/.gitkeep
-!data/uploads/annotated/.gitkeep
-!data/uploads/crops/.gitkeep
 
-# Private presentations and office documents
-*.pptx
-*.docx
-*.xlsx
-
-# Environment variables
-.env
+# IDE & OS
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db

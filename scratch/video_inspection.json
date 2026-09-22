@@ -1,0 +1,62 @@
+[
+  {
+    "filename": "13020050_3840_2160_30fps.mp4",
+    "resolution": "3840x2160",
+    "fps": 30.0,
+    "frame_count": 476,
+    "duration_sec": 15.9,
+    "thumbnails": [
+      "13020050_3840_2160_30fps_frame_25.jpg",
+      "13020050_3840_2160_30fps_frame_50.jpg",
+      "13020050_3840_2160_30fps_frame_75.jpg"
+    ]
+  },
+  {
+    "filename": "13926703_3840_2160_24fps.mp4",
+    "resolution": "3840x2160",
+    "fps": 24.0,
+    "frame_count": 251,
+    "duration_sec": 10.5,
+    "thumbnails": [
+      "13926703_3840_2160_24fps_frame_25.jpg",
+      "13926703_3840_2160_24fps_frame_50.jpg",
+      "13926703_3840_2160_24fps_frame_75.jpg"
+    ]
+  },
+  {
+    "filename": "14571138_3840_2160_60fps.mp4",
+    "resolution": "3840x2160",
+    "fps": 60.0,
+    "frame_count": 600,
+    "duration_sec": 10.0,
+    "thumbnails": [
+      "14571138_3840_2160_60fps_frame_25.jpg",
+      "14571138_3840_2160_60fps_frame_50.jpg",
+      "14571138_3840_2160_60fps_frame_75.jpg"
+    ]
+  },
+  {
+    "filename": "5009674-hd_1920_1080_25fps.mp4",
+    "resolution": "1920x1080",
+    "fps": 25.0,
+    "frame_count": 525,
+    "duration_sec": 21.0,
+    "thumbnails": [
+      "5009674-hd_1920_1080_25fps_frame_25.jpg",
+      "5009674-hd_1920_1080_25fps_frame_50.jpg",
+      "5009674-hd_1920_1080_25fps_frame_75.jpg"
+    ]
+  },
+  {
+    "filename": "5614377-hd_1920_1080_25fps.mp4",
+    "resolution": "1920x1080",
+    "fps": 25.0,
+    "frame_count": 174,
+    "duration_sec": 7.0,
+    "thumbnails": [
+      "5614377-hd_1920_1080_25fps_frame_25.jpg",
+      "5614377-hd_1920_1080_25fps_frame_50.jpg",
+      "5614377-hd_1920_1080_25fps_frame_75.jpg"
+    ]
+  }
+]

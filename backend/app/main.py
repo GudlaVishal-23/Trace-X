@@ -82,6 +82,64 @@ def seed_initial_data():
     finally:
         db.close()
 
+def run_startup_self_check():
+    """Startup self-check verifying ffmpeg, YOLO weights, ANPR, data dirs, and DB connectivity (Part D.4)."""
+    import shutil
+    import logging
+    import numpy as np
+    from sqlalchemy import text as sa_text
+    from backend.app.config import YOLO_WEIGHTS_PATH, DATA_DIR, UPLOADS_DIR, CROPS_DIR, ANNOTATED_DIR
+
+    check_logger = logging.getLogger("tracex.self_check")
+    check_logger.info("=" * 65)
+    check_logger.info("           TRACE-X STARTUP SELF-CHECK (SIH26127)            ")
+    check_logger.info("=" * 65)
+
+    # 1. FFmpeg on PATH
+    ffmpeg_bin = shutil.which("ffmpeg")
+    if ffmpeg_bin:
+        check_logger.info(f"[PASS] FFmpeg binary on PATH: {ffmpeg_bin}")
+    else:
+        check_logger.error("[FAIL] FFmpeg not found on system PATH! Browser video re-encoding will fail.")
+
+    # 2. YOLO weights
+    if YOLO_WEIGHTS_PATH.exists():
+        check_logger.info(f"[PASS] YOLOv8 weights file found: {YOLO_WEIGHTS_PATH}")
+    else:
+        check_logger.warning(f"[WARN] YOLOv8 weights file not found at {YOLO_WEIGHTS_PATH} (will fallback or download)")
+
+    # 3. ANPR & OCR perception pipeline
+    try:
+        from backend.app.services.anpr import assess_image_quality, enhance_plate_crop, fuse_multiframe_reads
+        dummy = np.zeros((40, 100, 3), dtype=np.uint8)
+        q = assess_image_quality(dummy)
+        enhance_plate_crop(dummy, q)
+        fuse_multiframe_reads([("TS09AB1234", 0.95, 80)])
+        check_logger.info("[PASS] ANPR / Bayesian perception pipeline verified operable")
+    except Exception as e:
+        check_logger.error(f"[FAIL] ANPR perception test error: {e}")
+
+    # 4. Data directories writable
+    try:
+        for folder in [DATA_DIR, UPLOADS_DIR, CROPS_DIR, ANNOTATED_DIR]:
+            folder.mkdir(parents=True, exist_ok=True)
+            test_f = folder / ".health_check_test"
+            test_f.write_text("ok")
+            test_f.unlink()
+        check_logger.info("[PASS] Ingest storage directories writable")
+    except Exception as e:
+        check_logger.error(f"[FAIL] Storage directory write permission error: {e}")
+
+    # 5. Database reachable & migrated
+    try:
+        with engine.connect() as conn:
+            conn.execute(sa_text("SELECT 1"))
+        check_logger.info("[PASS] SQLite database reachable and responsive")
+    except Exception as e:
+        check_logger.error(f"[FAIL] Database connection failed: {e}")
+
+    check_logger.info("=" * 65)
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Capture the running event loop for thread worker WebSocket dispatch
@@ -92,6 +150,7 @@ async def lifespan(app: FastAPI):
     # Create tables automatically on startup
     Base.metadata.create_all(bind=engine)
     seed_initial_data()
+    run_startup_self_check()
     await ingestion_queue.start_worker()
     yield
     await ingestion_queue.stop_worker()
@@ -124,18 +183,15 @@ app.include_router(videos.router, prefix="/api")
 app.include_router(ingest.router, prefix="/api")
 app.include_router(ingest.ws_router)
 
+from backend.app.config import STATIC_DIR, SAMPLE_VIDEOS_DIR, UPLOADS_DIR
+
 # Mount Static Files & Web Dashboard
-STATIC_DIR = Path(__file__).parent / "static"
 if STATIC_DIR.exists():
     app.mount("/static", StaticFiles(directory=STATIC_DIR), name="static")
 
-SAMPLE_VIDEOS_DIR = Path(__file__).parent / "static" / "sample_videos"
-if not SAMPLE_VIDEOS_DIR.exists():
-    SAMPLE_VIDEOS_DIR = Path(os.getcwd()) / "sample videos"
 if SAMPLE_VIDEOS_DIR.exists():
     app.mount("/sample_videos", StaticFiles(directory=SAMPLE_VIDEOS_DIR), name="sample_videos")
 
-UPLOADS_DIR = Path(os.getcwd()) / "data" / "uploads"
 if UPLOADS_DIR.exists():
     app.mount("/data/uploads", StaticFiles(directory=UPLOADS_DIR), name="uploads")
 
@@ -145,20 +201,6 @@ def serve_dashboard():
     if index_path.exists():
         return FileResponse(index_path)
     return {"status": "online", "message": "TRACE-X API is active. Open /docs for Swagger specifications."}
-
-@app.get("/style.css")
-def serve_style():
-    style_path = STATIC_DIR / "style.css"
-    if style_path.exists():
-        return FileResponse(style_path, media_type="text/css")
-    return {"status": "error"}
-
-@app.get("/app.js")
-def serve_app_js():
-    js_path = STATIC_DIR / "app.js"
-    if js_path.exists():
-        return FileResponse(js_path, media_type="application/javascript")
-    return {"status": "error"}
 
 @app.get("/scan")
 def serve_scan_theatre():

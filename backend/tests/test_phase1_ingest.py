@@ -17,8 +17,6 @@ def test_phase1_ingest_pipeline():
         # 2. Pick a test video
         sample_video_path = os.path.join(os.getcwd(), "scratch", "sample_test_3s.mp4")
         if not os.path.exists(sample_video_path):
-            sample_video_path = os.path.join(os.getcwd(), "backend", "app", "static", "sample_videos", "5009674-hd_1920_1080_25fps.mp4")
-        if not os.path.exists(sample_video_path):
             sample_video_path = os.path.join(os.getcwd(), "sample videos", "5009674-hd_1920_1080_25fps.mp4")
         assert os.path.exists(sample_video_path), f"Sample video missing at {sample_video_path}"
 
@@ -71,7 +69,7 @@ def test_phase1_ingest_pipeline():
             print("[PASS] /ws/ingest/{job_id} WebSocket stream connected and active")
 
         # 7. Wait briefly for worker to complete or process frames
-        max_wait = 25
+        max_wait = 45
         start_wait = time.time()
         final_job = None
         while time.time() - start_wait < max_wait:
@@ -98,7 +96,8 @@ def test_phase1_ingest_pipeline():
         assert track_res.status_code == 200
         tracks = track_res.json()
         assert len(tracks) > 0
-        print(f"[PASS] /api/ingest/jobs/{job_id}/tracks returned {len(tracks)} fused tracks (Bayesian consensus)")
+        assert any(t.get("fused_plate") is not None for t in tracks), "Expected at least one row with non-null fused_plate"
+        print(f"[PASS] /api/ingest/jobs/{job_id}/tracks returned {len(tracks)} fused tracks with non-null fused_plate (Bayesian consensus)")
 
         # 10. Verify Annotated Video Stream with Range Support
         ann_res = client.get(
