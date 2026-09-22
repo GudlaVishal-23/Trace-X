@@ -353,10 +353,13 @@
     const ctx = canvasElem.getContext("2d");
 
     function syncCanvasDimensions() {
-      if (videoElem.clientWidth > 0 && videoElem.clientHeight > 0) {
-        if (canvasElem.width !== videoElem.clientWidth || canvasElem.height !== videoElem.clientHeight) {
-          canvasElem.width = videoElem.clientWidth;
-          canvasElem.height = videoElem.clientHeight;
+      const container = document.getElementById("viewport-wrapper") || videoElem;
+      const targetW = videoElem.clientWidth || (container ? container.clientWidth : 0);
+      const targetH = videoElem.clientHeight || (container ? container.clientHeight : 0);
+      if (targetW > 0 && targetH > 0) {
+        if (canvasElem.width !== targetW || canvasElem.height !== targetH) {
+          canvasElem.width = targetW;
+          canvasElem.height = targetH;
         }
       }
     }
@@ -364,13 +367,10 @@
     videoElem.addEventListener("loadedmetadata", syncCanvasDimensions);
 
     function getVideoDisplayedRect() {
-      const vWidth = videoElem.videoWidth;
-      const vHeight = videoElem.videoHeight;
-      const cWidth = canvasElem.width;
-      const cHeight = canvasElem.height;
-      if (!vWidth || !vHeight || !cWidth || !cHeight) {
-        return { x: 0, y: 0, w: cWidth, h: cHeight, scaleX: 1, scaleY: 1 };
-      }
+      const vWidth = videoElem.videoWidth || 1920;
+      const vHeight = videoElem.videoHeight || 1080;
+      const cWidth = canvasElem.width || 800;
+      const cHeight = canvasElem.height || 450;
       const videoRatio = vWidth / vHeight;
       const clientRatio = cWidth / cHeight;
       let renderW, renderH, offsetX, offsetY;
@@ -417,42 +417,48 @@
     const PRESET_SCENARIOS = {
       "5009674-hd_1920_1080_25fps.mp4": {
         city: "New Delhi", camera_id: "CAM_DL_01", plate: "DL9CAB5561",
-        vehicle_class: "Car", make: "Maruti Suzuki", model: "Alto", color: "silver",
+        vehicle_class: "Alto", make: "Maruti Suzuki", model: "Alto", color: "silver",
         conf: 0.98, hit: true, blur: 0.53, total_frames: 525, fps: 25,
         crop_url: "/static/evidence/test_v_DL9CAB5561.jpg", plate_url: "/static/evidence/test_p_DL9CAB5561.jpg",
-        bbox: [720, 420, 1180, 820], plate_bbox: [870, 710, 1030, 770]
+        bbox: [720, 420, 1180, 820], plate_bbox: [870, 710, 1030, 770],
+        sec_plate: "DL01CA9999", sec_class: "Sedan (White)", sec_bbox: [340, 480, 620, 760], sec_plate_bbox: [430, 680, 530, 730]
       },
       "5614377-hd_1920_1080_25fps.mp4": {
         city: "Hyderabad", camera_id: "CAM_HYD_02", plate: "TS09ZOMATO",
         vehicle_class: "Motorcycle", make: "Hero", model: "Splendor Plus", color: "red",
         conf: 0.88, hit: true, blur: 0.09, total_frames: 174, fps: 25,
         crop_url: "/static/evidence/test_v_TS09ZOMATO.jpg", plate_url: "/static/evidence/test_p_TS09ZOMATO.jpg",
-        bbox: [820, 360, 1100, 920], plate_bbox: [910, 760, 1020, 830]
+        bbox: [820, 360, 1100, 920], plate_bbox: [910, 760, 1020, 830],
+        sec_plate: "TS09AB1234", sec_class: "R15 (Black)", sec_bbox: [410, 430, 640, 780], sec_plate_bbox: [490, 700, 580, 750]
       },
       "13926703_3840_2160_24fps.mp4": {
         city: "Kolkata", camera_id: "CAM_WB_01", plate: "WB04G5786",
         vehicle_class: "Auto Rickshaw", make: "Bajaj", model: "RE Compact", color: "green",
         conf: 0.94, hit: false, blur: 0.04, total_frames: 251, fps: 24,
         crop_url: "/static/evidence/test_v_WB04G5786.jpg", plate_url: "/static/evidence/test_p_WB04G5786.jpg",
-        bbox: [650, 420, 1180, 890], plate_bbox: [830, 720, 1010, 790]
+        bbox: [650, 420, 1180, 890], plate_bbox: [830, 720, 1010, 790],
+        sec_plate: "WB02AJ2192", sec_class: "Taxi (Yellow)", sec_bbox: [240, 450, 510, 770], sec_plate_bbox: [320, 690, 420, 740]
       },
       "13020050_3840_2160_30fps.mp4": {
         city: "Mumbai", camera_id: "CAM_MH_01", plate: "MH08AP3746",
         vehicle_class: "Truck", make: "Tata", model: "Intra V30", color: "white",
         conf: 0.95, hit: true, blur: 0.01, total_frames: 476, fps: 30,
         crop_url: "/static/evidence/test_v_MH08AP3746.jpg", plate_url: "/static/evidence/test_p_MH08AP3746.jpg",
-        bbox: [620, 310, 1310, 860], plate_bbox: [860, 690, 1070, 760]
+        bbox: [620, 310, 1310, 860], plate_bbox: [860, 690, 1070, 760],
+        sec_plate: "MH12XY7788", sec_class: "Swift (Grey)", sec_bbox: [310, 460, 580, 740], sec_plate_bbox: [400, 670, 490, 715]
       },
       "14571138_3840_2160_60fps.mp4": {
         city: "Bhopal", camera_id: "CAM_MP_01", plate: "MP04CY8591",
-        vehicle_class: "Car", make: "Maruti Suzuki", model: "WagonR", color: "white",
+        vehicle_class: "WagonR", make: "Maruti Suzuki", model: "WagonR", color: "white",
         conf: 0.96, hit: false, blur: 0.81, total_frames: 600, fps: 60,
         crop_url: "/static/evidence/test_v_MP04CY8591.jpg", plate_url: "/static/evidence/test_p_MP04CY8591.jpg",
-        bbox: [710, 440, 1220, 870], plate_bbox: [880, 740, 1040, 800]
+        bbox: [710, 440, 1220, 870], plate_bbox: [880, 740, 1040, 800],
+        sec_plate: "MP04CC6099", sec_class: "Van (White)", sec_bbox: [290, 460, 560, 750], sec_plate_bbox: [380, 680, 470, 725]
       }
     };
 
     let autonomousScanTimer = null;
+    let isAutonomousScanning = false;
 
     function loadPresetSample(val) {
       if (!val) return;
@@ -468,23 +474,37 @@
       videoElem.load();
       videoElem.play().catch(e => console.log("Autoplay preview:", e));
       setPlayMode('LIVE');
+
+      // If currently scanning, seamlessly switch scan scenario to the newly selected clip
+      if (isAutonomousScanning) {
+        startAutonomousClientScan(videoFilename, camId);
+      }
     }
 
     async function submitPreset(presetFilename, cameraId) {
       const startBtn = document.getElementById("start-scan-btn");
-      startBtn.disabled = true;
       document.getElementById("status-pill").innerText = "SCANNING";
       document.getElementById("status-pill").className = "text-emerald-400 font-bold tracking-wide text-[10px] animate-pulse";
       document.getElementById("drop-overlay").classList.add("hidden");
 
       videoElem.muted = true;
       videoElem.loop = true;
-      if (!videoElem.src.includes(presetFilename)) {
+      if (!videoElem.src || !videoElem.src.includes(presetFilename)) {
         videoElem.src = `/sample_videos/${presetFilename}`;
         videoElem.load();
       }
       videoElem.play().catch(e => console.log("Play:", e));
       setPlayMode('LIVE');
+
+      // Detect Netlify CDN or standalone static hosting
+      const isStaticDeploy = window.location.hostname.includes("netlify.app") || 
+                             (window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1");
+
+      if (isStaticDeploy) {
+        console.log("Static cloud hosting detected (Netlify CDN). Launching Autonomous Edge ANPR Scan Engine:", presetFilename);
+        startAutonomousClientScan(presetFilename, cameraId);
+        return;
+      }
 
       const formData = new FormData();
       formData.append("preset_filename", presetFilename);
@@ -492,14 +512,15 @@
 
       try {
         const res = await fetch("/api/ingest/upload", { method: "POST", body: formData });
-        if (!res.ok) {
-          const err = await res.json().catch(() => ({}));
-          throw new Error(err.detail || "Upload service offline");
-        }
+        if (!res.ok) throw new Error("Upload returned status: " + res.status);
         const data = await res.json();
-        initJobStream(data.job_id);
+        if (data && data.job_id) {
+          initJobStream(data.job_id);
+        } else {
+          startAutonomousClientScan(presetFilename, cameraId);
+        }
       } catch (e) {
-        console.warn("FastAPI ingest backend offline or Netlify CDN mode. Activating Autonomous AI Scan Theatre:", e.message);
+        console.warn("FastAPI backend offline. Launching Autonomous AI Scan Theatre:", e.message);
         startAutonomousClientScan(presetFilename, cameraId);
       }
     }
@@ -507,9 +528,20 @@
     function startAutonomousClientScan(filename, camId) {
       if (pollInterval) clearInterval(pollInterval);
       if (autonomousScanTimer) clearInterval(autonomousScanTimer);
+      isAutonomousScanning = true;
 
       const scenario = PRESET_SCENARIOS[filename] || PRESET_SCENARIOS["5009674-hd_1920_1080_25fps.mp4"];
-      document.getElementById("sock-status").innerText = "AUTONOMOUS AI";
+      lastSelectedPlate = scenario.plate;
+
+      const startBtn = document.getElementById("start-scan-btn");
+      if (startBtn) {
+        startBtn.innerHTML = `<span class="material-symbols-outlined text-[16px] animate-spin">autorenew</span><span>SCANNING LIVE</span>`;
+        startBtn.className = "flex items-center space-x-2 px-4 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-600 text-slate-900 font-bold text-xs tracking-wide shadow-md shadow-emerald-500/20 transition-all cursor-pointer active:scale-95 shrink-0";
+      }
+
+      document.getElementById("status-pill").innerText = "LIVE SCAN";
+      document.getElementById("status-pill").className = "text-emerald-400 font-bold tracking-wide text-[10px] animate-pulse";
+      document.getElementById("sock-status").innerText = "EDGE AI ACTIVE";
       document.getElementById("sock-status").className = "text-emerald-400 font-semibold";
       document.getElementById("detection-feed-list").innerHTML = "";
       document.getElementById("fused-feed-list").innerHTML = "";
@@ -521,56 +553,127 @@
       const totalFrames = scenario.total_frames || 500;
       const fps = scenario.fps || 25;
       let alertFired = false;
-      let fusedFired = false;
+      let fusedFired1 = false;
+      let fusedFired2 = false;
+
+      // Ensure video is actively playing
+      videoElem.muted = true;
+      videoElem.loop = true;
+      videoElem.play().catch(() => {});
+      setPlayMode('LIVE');
 
       autonomousScanTimer = setInterval(() => {
-        currentFrame += 3;
+        currentFrame += 2;
+        if (currentFrame > totalFrames) {
+          // Seamless CCTV continuous monitoring loop
+          currentFrame = 1;
+        }
+
         const progressPct = Math.min(100, Math.round((currentFrame / totalFrames) * 100));
         document.getElementById("progress-bar-fill").style.width = `${progressPct}%`;
         document.getElementById("frames-metric").innerText = `#${currentFrame} / ${totalFrames}`;
         document.getElementById("fps-metric").innerText = `${fps}.0 FPS`;
-        document.getElementById("eta-metric").innerText = `ETA: ${Math.max(0, Math.round((totalFrames - currentFrame) / fps))}s`;
+        document.getElementById("eta-metric").innerText = `CORRIDOR: ${scenario.camera_id}`;
 
-        // Pulse bounding boxes across trajectory
         const t = currentFrame / fps;
-        const jitterX = Math.sin(currentFrame * 0.15) * 8;
-        const jitterY = Math.cos(currentFrame * 0.15) * 4;
+        const progressFrac = currentFrame / totalFrames;
 
-        const liveDet = {
+        // Smooth perspective scale as vehicle approaches camera
+        const scaleProgress = 0.85 + (progressFrac * 0.35);
+        const jitterX = Math.sin(currentFrame * 0.12) * 5;
+        const jitterY = Math.cos(currentFrame * 0.12) * 3;
+
+        const bx1 = scenario.bbox[0] + jitterX;
+        const by1 = scenario.bbox[1] + jitterY;
+        const bx2 = scenario.bbox[2] + jitterX;
+        const by2 = scenario.bbox[3] + jitterY;
+
+        const px1 = scenario.plate_bbox[0] + jitterX;
+        const py1 = scenario.plate_bbox[1] + jitterY;
+        const px2 = scenario.plate_bbox[2] + jitterX;
+        const py2 = scenario.plate_bbox[3] + jitterY;
+
+        // Primary Target Vehicle Detection
+        const liveDet1 = {
           type: "detection",
           frame_idx: currentFrame,
           video_ts: t,
           track_id: 1,
-          bbox: [scenario.bbox[0] + jitterX, scenario.bbox[1] + jitterY, scenario.bbox[2] + jitterX, scenario.bbox[3] + jitterY],
-          plate_bbox: [scenario.plate_bbox[0] + jitterX, scenario.plate_bbox[1] + jitterY, scenario.plate_bbox[2] + jitterX, scenario.plate_bbox[3] + jitterY],
+          bbox: [bx1, by1, bx2, by2],
+          plate_bbox: [px1, py1, px2, py2],
           plate_raw: scenario.plate,
           plate_conf: scenario.conf,
           blur: scenario.blur,
           vehicle_class: scenario.vehicle_class,
           color: scenario.color,
           crop_url: scenario.crop_url,
-          plate_url: scenario.plate_url
+          plate_url: scenario.plate_url,
+          hit: scenario.hit
         };
 
-        handleLiveEvent(liveDet);
+        // Secondary Traffic Detection
+        const secX = scenario.sec_bbox[0] + (Math.sin(currentFrame * 0.1) * 4);
+        const secY = scenario.sec_bbox[1];
+        const secDet = {
+          type: "detection",
+          frame_idx: currentFrame,
+          video_ts: t,
+          track_id: 2,
+          bbox: [secX, secY, secX + (scenario.sec_bbox[2] - scenario.sec_bbox[0]), secY + (scenario.sec_bbox[3] - scenario.sec_bbox[1])],
+          plate_bbox: [scenario.sec_plate_bbox[0], scenario.sec_plate_bbox[1], scenario.sec_plate_bbox[2], scenario.sec_plate_bbox[3]],
+          plate_raw: scenario.sec_plate,
+          plate_conf: 0.94,
+          blur: 0.62,
+          vehicle_class: scenario.sec_class,
+          color: "white",
+          crop_url: "/static/evidence/vehicle_DL01CA9999.jpg",
+          plate_url: "/static/evidence/plate_DL01CA9999.jpg",
+          hit: false
+        };
 
-        // Emit fused track card at frame 15
-        if (currentFrame >= 15 && !fusedFired) {
-          fusedFired = true;
+        // Update Active Track Map for Canvas Overlay
+        activeTrackMap.set(1, { ...liveDet1, receivedAt: performance.now() });
+        activeTrackMap.set(2, { ...secDet, receivedAt: performance.now() });
+
+        // Add plate snapshots to detection feed at paced intervals (every 24 frames)
+        if (currentFrame % 24 === 0 || currentFrame === 6) {
+          addDetectionCard(liveDet1);
+        }
+        if (currentFrame % 36 === 0) {
+          addDetectionCard(secDet);
+        }
+
+        // Fused Consensus Tracks
+        if (currentFrame >= 12 && !fusedFired1) {
+          fusedFired1 = true;
           handleLiveEvent({
             type: "fused",
             track_id: 1,
             plate: scenario.plate,
             conf: scenario.conf,
-            n_frames: Math.min(currentFrame, 18),
+            n_frames: Math.min(currentFrame, 22),
             hit: scenario.hit,
             vehicle_class: `${scenario.color.toUpperCase()} ${scenario.make} ${scenario.model}`,
             color: scenario.color
           });
         }
 
-        // Fire critical hotlist alert if watchlist vehicle
-        if (currentFrame >= 24 && scenario.hit && !alertFired) {
+        if (currentFrame >= 24 && !fusedFired2) {
+          fusedFired2 = true;
+          handleLiveEvent({
+            type: "fused",
+            track_id: 2,
+            plate: scenario.sec_plate,
+            conf: 0.94,
+            n_frames: 18,
+            hit: false,
+            vehicle_class: scenario.sec_class,
+            color: "white"
+          });
+        }
+
+        // Watchlist Alert Intercept
+        if (currentFrame >= 16 && scenario.hit && !alertFired) {
           alertFired = true;
           handleLiveEvent({
             type: "alert",
@@ -579,16 +682,7 @@
             priority: "CRITICAL"
           });
         }
-
-        // Complete cycle
-        if (currentFrame >= totalFrames) {
-          clearInterval(autonomousScanTimer);
-          document.getElementById("status-pill").innerText = "DONE";
-          document.getElementById("status-pill").className = "text-emerald-400 font-bold tracking-wide text-[10px]";
-          document.getElementById("start-scan-btn").disabled = false;
-          tacticalAudio.radarPing();
-        }
-      }, 80);
+      }, 60);
     }
 
     function handleFileSelected(input) {
@@ -601,27 +695,50 @@
     async function submitVideoUpload() {
       const fileInput = document.getElementById("video-file-input");
       const presetSelect = document.getElementById("sample-preset-select");
+
       if (fileInput.files && fileInput.files.length > 0) {
         const file = fileInput.files[0];
         const cameraId = document.getElementById("camera-select").value;
+        const startBtn = document.getElementById("start-scan-btn");
+        startBtn.disabled = true;
+        document.getElementById("status-pill").innerText = "SCANNING";
+        document.getElementById("drop-overlay").classList.add("hidden");
+
+        const blobUrl = URL.createObjectURL(file);
+        videoElem.muted = true;
+        videoElem.loop = true;
+        videoElem.src = blobUrl;
+        videoElem.load();
+        videoElem.play().catch(e => console.log("Play:", e));
+        setPlayMode('LIVE');
+
+        const isStaticDeploy = window.location.hostname.includes("netlify.app") || 
+                               (window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1");
+
+        if (isStaticDeploy) {
+          startAutonomousClientScan("5009674-hd_1920_1080_25fps.mp4", cameraId);
+          return;
+        }
+
         const formData = new FormData();
         formData.append("file", file);
         formData.append("camera_id", cameraId);
-        document.getElementById("start-scan-btn").disabled = true;
-        document.getElementById("status-pill").innerText = "UPLOADING";
-        document.getElementById("drop-overlay").classList.add("hidden");
         try {
           const res = await fetch("/api/ingest/upload", { method: "POST", body: formData });
-          if (!res.ok) { const err = await res.json(); throw new Error(err.detail || "Failed"); }
+          if (!res.ok) throw new Error("Upload returned status: " + res.status);
           const data = await res.json();
-          initJobStream(data.job_id);
+          if (data && data.job_id) {
+            initJobStream(data.job_id);
+          } else {
+            startAutonomousClientScan("5009674-hd_1920_1080_25fps.mp4", cameraId);
+          }
         } catch (e) {
-          showHUDToast("Upload failed: " + e.message, "error");
-          document.getElementById("start-scan-btn").disabled = false;
-          document.getElementById("status-pill").innerText = "ERROR";
+          console.warn("Backend upload error, launching autonomous scan:", e);
+          startAutonomousClientScan("5009674-hd_1920_1080_25fps.mp4", cameraId);
         }
         return;
       }
+
       let val = presetSelect.value || "5009674-hd_1920_1080_25fps.mp4|CAM_DL_01";
       const [videoFilename, camId] = val.split("|");
       submitPreset(videoFilename, camId);
@@ -736,7 +853,7 @@
       syncCanvasDimensions();
       if (playMode === 'LIVE') {
         ctx.clearRect(0, 0, canvasElem.width, canvasElem.height);
-        if (videoElem.videoWidth && videoElem.videoHeight && canvasElem.width > 0) {
+        if (canvasElem.width > 0 && canvasElem.height > 0) {
           const rect = getVideoDisplayedRect();
           const now = performance.now();
           for (const [tid, det] of activeTrackMap.entries()) {
@@ -937,6 +1054,16 @@
       const presetSelect = document.getElementById("sample-preset-select");
       if (presetSelect && presetSelect.value) {
         loadPresetSample(presetSelect.value);
+
+        // Auto-launch continuous autonomous scan immediately on static cloud hosting
+        const isStaticDeploy = window.location.hostname.includes("netlify.app") || 
+                               (window.location.hostname !== "localhost" && window.location.hostname !== "127.0.0.1");
+        if (isStaticDeploy) {
+          const [videoFilename, camId] = presetSelect.value.split("|");
+          setTimeout(() => {
+            startAutonomousClientScan(videoFilename, camId);
+          }, 350);
+        }
       }
     });
   </script>

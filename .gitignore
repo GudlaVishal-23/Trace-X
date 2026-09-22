@@ -51,6 +51,8 @@ sample videos/*.avi
 sample videos/*.mov
 sample videos/*.mkv
 !sample videos/*.mp4
+sample videos/*Screen Recording*.mp4
+data/sample/*Screen Recording*.mp4
 !sample videos/.gitkeep
 !backend/app/static/sample_videos/*.mp4
 
