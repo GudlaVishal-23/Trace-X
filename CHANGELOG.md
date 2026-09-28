@@ -5,6 +5,20 @@
 
 ---
 
+## [2026-09-22] - SIH Evaluator Technical Dossier
+
+### 📋 SIH Evaluator Documentation — Graphified Technical Dossier
+
+- **What was done:**
+  - Created [`docs/SIH_EVALUATOR_DOSSIER.md`](file:///c:/Neura%20Track/docs/SIH_EVALUATOR_DOSSIER.md) — a comprehensive, evaluator-facing technical document covering all SIH judging dimensions.
+  - Sections: Executive Summary, Problem Framing (storage model comparison), System Architecture (ASCII diagram), AI Pipeline with proofs and worked examples, Cross-Camera Trajectory Engine (6-signal MatchScore formula, Velocity Guard, Camera Gap bridging), Forensic Compliance (SHA-256 Merkle chain, 65B evidence, DPDP Act 2023, RBAC), Macro Urban Traffic Analytics, Performance Specifications, Scale Architecture (Kafka + Citus path), Deployment Readiness (Netlify + Autonomous Edge), Differentiator Comparison Table, Vehicle Event Schema, 8-Minute Demo Choreography, Accuracy Benchmark Framework, and Compliance Summary.
+- **Where:**
+  - [`docs/SIH_EVALUATOR_DOSSIER.md`](file:///c:/Neura%20Track/docs/SIH_EVALUATOR_DOSSIER.md) — primary evaluator document
+- **Why:**
+  - SIH evaluators need a single, self-contained document that answers every standard evaluation question: Is it real? Is it accurate? Can it be abused? Can it scale? Does it comply with Indian law? The dossier provides hard quantitative evidence for all of these.
+
+---
+
 ## [2026-09-22] - Full Netlify Deployment Readiness & Autonomous Edge CDN Engine
 
 ### 🌐 Full Netlify Production Deployment & Autonomous Edge Perception Architecture
